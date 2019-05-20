@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group 'fr.pturpin.hackaton'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.27.0'
+    testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+}
