@@ -24,6 +24,19 @@ public class GameInputScanner_UT {
         assertThat(source.nextLine()).isEqualTo("second line");
     }
 
+    @Test
+    public void givenSequenceOfIntAndLine_ReturnsThem() throws Exception {
+        GameInputScanner source = givenInput("1\nline\n2\n\n3\ndummy\n\n");
+
+        assertThat(source.nextInt()).isEqualTo(1);
+        assertThat(source.nextLine()).isEqualTo("line");
+        assertThat(source.nextInt()).isEqualTo(2);
+        assertThat(source.nextLine()).isEqualTo("");
+        assertThat(source.nextInt()).isEqualTo(3);
+        assertThat(source.nextLine()).isEqualTo("dummy");
+        assertThat(source.nextLine()).isEqualTo("");
+    }
+
     private GameInputScanner givenInput(String input) {
         return GameInputScanner.fromString(input);
     }

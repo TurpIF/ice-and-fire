@@ -6,8 +6,9 @@ import java.util.Scanner;
 public class GameInputScanner implements GameInputSource {
 
     private final Scanner scanner;
+    private boolean hasReadInt = false;
 
-    private GameInputScanner(Scanner scanner) {
+    public GameInputScanner(Scanner scanner) {
         this.scanner = scanner;
     }
 
@@ -19,11 +20,23 @@ public class GameInputScanner implements GameInputSource {
 
     @Override
     public int nextInt() {
+        hasReadInt = true;
         return scanner.nextInt();
     }
 
     @Override
     public String nextLine() {
-        return scanner.nextLine();
+        String line = scanner.nextLine();
+
+        if (shouldConsumeNewLineAfterIntRead(line)) {
+            line = scanner.nextLine();
+        }
+        hasReadInt = false;
+
+        return line;
+    }
+
+    private boolean shouldConsumeNewLineAfterIntRead(String line) {
+        return hasReadInt && line.isEmpty();
     }
 }

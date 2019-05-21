@@ -221,7 +221,7 @@ public class GameReader_UT {
         sb.append("4\n");
 
         // Grid
-        sb.append("#.OoXx......\n");
+        sb.append(".#OoXx......\n");
         for (int i = 0; i < 11; i++) {
             sb.append("............\n");
         }
