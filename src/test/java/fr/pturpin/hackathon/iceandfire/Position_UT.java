@@ -2,6 +2,7 @@ package fr.pturpin.hackathon.iceandfire;
 
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class Position_UT {
@@ -34,6 +35,26 @@ public class Position_UT {
     @Test
     public void new_GivenForbiddenCoordinates_ThrowsIllegalArgument4() {
         assertThatCode(() -> new Position(0, -1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void distanceTo_GivenSamePosition_Returns0() throws Exception {
+        Position position = new Position(0, 0);
+
+        int distance = position.distanceTo(position);
+
+        assertThat(distance).isEqualTo(0);
+    }
+
+    @Test
+    public void distanceTo_GivenOtherPosition_ReturnsL1Distance() throws Exception {
+        Position position1 = new Position(0, 0);
+        Position position2 = new Position(4, 5);
+
+        int distance1 = position2.distanceTo(position1);
+        int distance2 = position1.distanceTo(position2);
+
+        assertThat(distance1).isEqualTo(distance2).isEqualTo(9);
     }
 
 }

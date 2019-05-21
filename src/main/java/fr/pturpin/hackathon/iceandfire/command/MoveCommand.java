@@ -1,19 +1,28 @@
 package fr.pturpin.hackathon.iceandfire.command;
 
-import fr.pturpin.hackathon.iceandfire.Position;
+import fr.pturpin.hackathon.iceandfire.GameCell;
+import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
 public class MoveCommand implements GameCommand {
 
-    private final int unitId;
-    private final Position targetPosition;
+    private final PlayerUnit playerUnit;
+    private final GameCell gameCell;
 
-    public MoveCommand(int unitId, Position targetPosition) {
-        this.unitId = unitId;
-        this.targetPosition = targetPosition;
+    public MoveCommand(PlayerUnit playerUnit, GameCell gameCell) {
+        this.playerUnit = playerUnit;
+        this.gameCell = gameCell;
+    }
+
+    @Override
+    public boolean isValid() {
+        return playerUnit.canMove()
+                && gameCell.getPosition().distanceTo(playerUnit.getPosition()) == 1
+                && !gameCell.containsAlly()
+                && gameCell.containsBeatableOpponentFor(playerUnit);
     }
 
     @Override
     public String getFormattedCommand() {
-        return String.format("MOVE %d %d %d", unitId, targetPosition.getX(), targetPosition.getY());
+        return String.format("MOVE %d %d %d", playerUnit.getId(), gameCell.getPosition().getX(), gameCell.getPosition().getY());
     }
 }

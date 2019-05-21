@@ -20,6 +20,10 @@ public final class Position {
         }
     }
 
+    public int distanceTo(Position position) {
+        return Math.abs(x - position.getX()) + Math.abs(y - position.getY());
+    }
+
     public int getX() {
         return x;
     }
@@ -49,5 +53,4 @@ public final class Position {
                 ", y=" + y +
                 '}';
     }
-
 }

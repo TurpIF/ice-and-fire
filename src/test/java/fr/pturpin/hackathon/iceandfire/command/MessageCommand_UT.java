@@ -24,4 +24,13 @@ public class MessageCommand_UT {
         assertThat(formattedCommand).isEqualTo("MSG dummy");
     }
 
+    @Test
+    public void isValid_GivenAnyGame_ReturnsTrue() throws Exception {
+        MessageCommand command = new MessageCommand("dummy");
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isTrue();
+    }
+
 }

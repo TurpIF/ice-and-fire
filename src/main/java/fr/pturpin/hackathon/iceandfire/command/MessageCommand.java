@@ -9,6 +9,11 @@ public class MessageCommand implements GameCommand {
     }
 
     @Override
+    public boolean isValid() {
+        return true;
+    }
+
+    @Override
     public String getFormattedCommand() {
         return "MSG " + message;
     }
