@@ -91,6 +91,15 @@ public class PlayerUnit_UT {
         assertThat(canBeat).isFalse();
     }
 
+    @Test
+    public void getLevel_GivenTrainedPlayerUnit_ReturnsItsLevel() throws Exception {
+        when(trainedPlayerUnit.getLevel()).thenReturn(1);
+
+        int level = unit.getLevel();
+
+        assertThat(level).isEqualTo(1);
+    }
+
     private void givenId(int id) {
         unit = new PlayerUnit(id, unit.getPosition(), trainedPlayerUnit);
     }

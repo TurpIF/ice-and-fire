@@ -26,6 +26,10 @@ public class PlayerUnit {
         return position;
     }
 
+    public int getLevel() {
+        return trainedPlayerUnit.getLevel();
+    }
+
     public boolean canBeat(OpponentUnit opponentUnit) {
         return trainedPlayerUnit.canBeat(opponentUnit);
     }
@@ -33,5 +37,4 @@ public class PlayerUnit {
     public boolean canBeat(OpponentBuilding opponentBuilding) {
         return trainedPlayerUnit.canBeat(opponentBuilding);
     }
-
 }

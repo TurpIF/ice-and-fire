@@ -4,6 +4,8 @@ import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 
+import java.util.Objects;
+
 public class GameCell {
 
     private final GameRepository gameRepository;
@@ -54,5 +56,19 @@ public class GameCell {
 
     public boolean isInMyTerritory() {
         return gameRepository.getCellType(position) == CellType.ACTIVE_MINE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameCell gameCell = (GameCell) o;
+        return Objects.equals(gameRepository, gameCell.gameRepository) &&
+                Objects.equals(position, gameCell.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameRepository, position);
     }
 }
