@@ -5,6 +5,7 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -18,8 +19,16 @@ public class Game implements GameRepository {
     private Map<Position, PlayerBuilding> playerBuildings = new HashMap<>();
     private Map<Position, OpponentBuilding> opponentBuildings = new HashMap<>();
 
+    public GameInitialization onInitialization() {
+        return new OnInitialization();
+    }
+
     public GameNewTurn onNewTurn() {
         return new OnNewTurn();
+    }
+
+    public GameStrategy asStrategy() {
+        return Collections::emptyList;
     }
 
     @Override
@@ -127,5 +136,18 @@ public class Game implements GameRepository {
             throw new UnsupportedOperationException("Unknown owner type: " + owner);
         }
 
+    }
+
+    private class OnInitialization implements GameInitialization {
+
+        @Override
+        public void setMineSpotCount(int mineSpotCount) {
+            // TODO
+        }
+
+        @Override
+        public void addMineSpot(Position position) {
+            // TODO
+        }
     }
 }
