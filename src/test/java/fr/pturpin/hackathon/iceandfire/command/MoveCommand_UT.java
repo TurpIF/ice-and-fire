@@ -1,7 +1,7 @@
 package fr.pturpin.hackathon.iceandfire.command;
 
-import fr.pturpin.hackathon.iceandfire.GameCell;
-import fr.pturpin.hackathon.iceandfire.Position;
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import org.junit.Before;
 import org.junit.Test;

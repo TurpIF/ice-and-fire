@@ -1,4 +1,9 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.game;
+
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
+import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
+import fr.pturpin.hackathon.iceandfire.unit.Owner;
 
 public interface GameNewTurn {
 

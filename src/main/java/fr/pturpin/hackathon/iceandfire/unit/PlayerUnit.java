@@ -1,6 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
-import fr.pturpin.hackathon.iceandfire.Position;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
 
 public class PlayerUnit {
 

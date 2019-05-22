@@ -1,8 +1,8 @@
 package fr.pturpin.hackathon.iceandfire.command;
 
-import fr.pturpin.hackathon.iceandfire.Game;
-import fr.pturpin.hackathon.iceandfire.GameCell;
-import fr.pturpin.hackathon.iceandfire.Position;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class TrainCommand_UT {
     private GameCell cell;
 
     @Mock
-    private Game game;
+    private GameRepository gameRepository;
 
     @Mock
     private TrainedPlayerUnit trainedPlayerUnit;
@@ -29,7 +29,7 @@ public class TrainCommand_UT {
 
     @Before
     public void setUp() throws Exception {
-        command = new TrainCommand(trainedPlayerUnit, cell, game);
+        command = new TrainCommand(trainedPlayerUnit, cell, gameRepository);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class TrainCommand_UT {
     @Test
     public void isValid_GivenNotEnoughGold_ReturnsFalse() throws Exception {
         givenValidTrain();
-        when(game.getPlayerGold()).thenReturn(9);
+        when(gameRepository.getPlayerGold()).thenReturn(9);
 
         boolean valid = command.isValid();
 
@@ -105,7 +105,7 @@ public class TrainCommand_UT {
     private void givenValidTrain() {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
-        when(game.getPlayerGold()).thenReturn(10);
+        when(gameRepository.getPlayerGold()).thenReturn(10);
         when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(true);
     }
 

@@ -1,24 +1,24 @@
 package fr.pturpin.hackathon.iceandfire.command;
 
-import fr.pturpin.hackathon.iceandfire.Game;
-import fr.pturpin.hackathon.iceandfire.GameCell;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 
 public class TrainCommand implements GameCommand {
 
     private final TrainedPlayerUnit trainedPlayerUnit;
     private final GameCell gameCell;
-    private final Game game;
+    private final GameRepository gameRepository;
 
-    public TrainCommand(TrainedPlayerUnit trainedPlayerUnit, GameCell gameCell, Game game) {
+    public TrainCommand(TrainedPlayerUnit trainedPlayerUnit, GameCell gameCell, GameRepository gameRepository) {
         this.trainedPlayerUnit = trainedPlayerUnit;
         this.gameCell = gameCell;
-        this.game = game;
+        this.gameRepository = gameRepository;
     }
 
     @Override
     public boolean isValid() {
-        boolean hasEnoughGold = game.getPlayerGold() >= 10;
+        boolean hasEnoughGold = gameRepository.getPlayerGold() >= 10;
         return hasEnoughGold
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()

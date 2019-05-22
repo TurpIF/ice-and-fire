@@ -1,6 +1,11 @@
 package fr.pturpin.hackathon.iceandfire.reader;
 
-import fr.pturpin.hackathon.iceandfire.*;
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
+import fr.pturpin.hackathon.iceandfire.game.GameInitialization;
+import fr.pturpin.hackathon.iceandfire.game.GameNewTurn;
+import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
+import fr.pturpin.hackathon.iceandfire.unit.Owner;
 
 public class GameReader {
 

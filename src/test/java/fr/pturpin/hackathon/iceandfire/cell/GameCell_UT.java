@@ -1,5 +1,6 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.cell;
 
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class GameCell_UT {
 
     @Mock
-    private Game game;
+    private GameRepository gameRepository;
 
     private Position position;
 
@@ -39,7 +40,7 @@ public class GameCell_UT {
     @Before
     public void setUp() throws Exception {
         position = new Position(0, 0);
-        cell = new GameCell(game, position);
+        cell = new GameCell(gameRepository, position);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class GameCell_UT {
 
     @Test
     public void containsAlly_GivenGameWithAllyUnit_ReturnsTrue() throws Exception {
-        when(game.getPlayerUnitAt(position)).thenReturn(Optional.of(mock(PlayerUnit.class)));
+        when(gameRepository.getPlayerUnitAt(position)).thenReturn(Optional.of(mock(PlayerUnit.class)));
 
         boolean containsAlly = cell.containsAlly();
 
@@ -62,7 +63,7 @@ public class GameCell_UT {
 
     @Test
     public void containsAlly_GivenGameWithAllyBuilding_ReturnsTrue() throws Exception {
-        when(game.getPlayerBuildingAt(position)).thenReturn(Optional.of(mock(PlayerBuilding.class)));
+        when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.of(mock(PlayerBuilding.class)));
 
         boolean containsAlly = cell.containsAlly();
 
@@ -71,8 +72,8 @@ public class GameCell_UT {
 
     @Test
     public void containsAlly_GivenGameWithoutAlly_ReturnsFalse() throws Exception {
-        when(game.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getPlayerUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getPlayerUnitAt(position)).thenReturn(Optional.empty());
 
         boolean containsAlly = cell.containsAlly();
 
@@ -81,8 +82,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentFor_GivenGameWithoutOpponent_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(playerUnit);
 
@@ -91,8 +92,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentFor_GivenGameWithBeatableOpponentUnit_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
         when(playerUnit.canBeat(opponentUnit)).thenReturn(true);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(playerUnit);
@@ -102,8 +103,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentFor_GivenGameWithBeatableOpponentBuilding_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
         when(playerUnit.canBeat(opponentBuilding)).thenReturn(true);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(playerUnit);
@@ -113,8 +114,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentFor_GivenGameWithUnbeatableOpponentUnit_ReturnsFalse() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
         when(playerUnit.canBeat(opponentUnit)).thenReturn(false);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(playerUnit);
@@ -124,8 +125,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentForTrained_GivenGameWithoutOpponent_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
 
@@ -134,8 +135,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentForTrained_GivenGameWithBeatableOpponentUnit_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
         when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(true);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
@@ -145,8 +146,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentForTrained_GivenGameWithBeatableOpponentBuilding_ReturnsTrue() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
         when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(true);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
@@ -156,8 +157,8 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentForTrained_GivenGameWithUnbeatableOpponentUnit_ReturnsFalse() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
-        when(game.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
         when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(false);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
@@ -167,7 +168,7 @@ public class GameCell_UT {
 
     @Test
     public void containsBeatableOpponentFor_GivenGameWithUnbeatableOpponentBuilding_ReturnsFalse() throws Exception {
-        when(game.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
         when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(false);
 
         boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
@@ -177,7 +178,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritory_GivenCaseTypeActiveOfMine_ReturnsTrue() throws Exception {
-        when(game.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
+        when(gameRepository.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
 
         boolean isInMyTerritory = cell.isInMyTerritory();
 
@@ -186,7 +187,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritory_GivenCaseTypeNotActiveOfMine_ReturnsFalse() throws Exception {
-        when(game.getCellType(position)).thenReturn(CellType.INACTIVE_MINE);
+        when(gameRepository.getCellType(position)).thenReturn(CellType.INACTIVE_MINE);
 
         boolean isInMyTerritory = cell.isInMyTerritory();
 
@@ -195,7 +196,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritoryOrInItsNeighborhood_GivenCellInTerritory_ReturnsTrue() throws Exception {
-        when(game.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
+        when(gameRepository.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
 
         boolean inMyTerritoryOrInItsNeighborhood = cell.isInMyTerritoryOrInItsNeighborhood();
 
@@ -211,7 +212,7 @@ public class GameCell_UT {
         when(cellNotInTerritory.isInMyTerritory()).thenReturn(false);
 
         Position anyNeighbor = position.getNeighbors().stream().skip(1).findAny().get();
-        when(game.getCell(any())).thenAnswer(invocation -> {
+        when(gameRepository.getCell(any())).thenAnswer(invocation -> {
             Position neighborPosition = invocation.getArgument(0);
             if (neighborPosition.equals(anyNeighbor)) {
                 return cellInTerritory;
@@ -229,7 +230,7 @@ public class GameCell_UT {
         GameCell cellNotInTerritory = mock(GameCell.class);
         when(cellNotInTerritory.isInMyTerritory()).thenReturn(false);
 
-        when(game.getCell(any())).thenReturn(cellNotInTerritory);
+        when(gameRepository.getCell(any())).thenReturn(cellNotInTerritory);
 
         boolean inMyTerritoryOrInItsNeighborhood = cell.isInMyTerritoryOrInItsNeighborhood();
 
@@ -238,7 +239,7 @@ public class GameCell_UT {
 
     private void givenPosition(int x, int y) {
         position = new Position(x, y);
-        cell = new GameCell(game, position);
+        cell = new GameCell(gameRepository, position);
     }
 
 }

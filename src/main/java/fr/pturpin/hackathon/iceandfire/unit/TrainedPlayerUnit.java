@@ -1,7 +1,5 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
-import fr.pturpin.hackathon.iceandfire.BuildingType;
-
 public class TrainedPlayerUnit {
 
     private final int level;

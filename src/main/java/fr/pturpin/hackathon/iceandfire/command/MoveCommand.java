@@ -1,6 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.command;
 
-import fr.pturpin.hackathon.iceandfire.GameCell;
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
 public class MoveCommand implements GameCommand {

@@ -1,6 +1,5 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
-import fr.pturpin.hackathon.iceandfire.BuildingType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

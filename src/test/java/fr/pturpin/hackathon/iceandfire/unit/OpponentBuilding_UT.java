@@ -1,6 +1,5 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
-import fr.pturpin.hackathon.iceandfire.BuildingType;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

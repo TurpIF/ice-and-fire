@@ -1,15 +1,16 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.cell;
 
-import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 
 public class GameCell {
 
-    private final Game game;
+    private final GameRepository gameRepository;
     private final Position position;
 
-    public GameCell(Game game, Position position) {
-        this.game = game;
+    public GameCell(GameRepository gameRepository, Position position) {
+        this.gameRepository = gameRepository;
         this.position = position;
     }
 
@@ -18,7 +19,7 @@ public class GameCell {
     }
 
     public boolean containsAlly() {
-        return game.getPlayerUnitAt(position).isPresent() || game.getPlayerBuildingAt(position).isPresent();
+        return gameRepository.getPlayerUnitAt(position).isPresent() || gameRepository.getPlayerBuildingAt(position).isPresent();
     }
 
     public boolean containsBeatableOpponentFor(PlayerUnit playerUnit) {
@@ -26,11 +27,11 @@ public class GameCell {
     }
 
     private Boolean containsBeatableOpponentUnitFor(PlayerUnit playerUnit) {
-        return game.getOpponentUnitAt(position).map(playerUnit::canBeat).orElse(true);
+        return gameRepository.getOpponentUnitAt(position).map(playerUnit::canBeat).orElse(true);
     }
 
     private Boolean containsBeatableOpponentBuildingFor(PlayerUnit playerUnit) {
-        return game.getOpponentBuildingAt(position).map(playerUnit::canBeat).orElse(true);
+        return gameRepository.getOpponentBuildingAt(position).map(playerUnit::canBeat).orElse(true);
     }
 
     public boolean containsBeatableOpponentFor(TrainedPlayerUnit trainedPlayerUnit) {
@@ -38,20 +39,20 @@ public class GameCell {
     }
 
     private Boolean containsBeatableOpponentUnitFor(TrainedPlayerUnit trainedPlayerUnit) {
-        return game.getOpponentUnitAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
+        return gameRepository.getOpponentUnitAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
     }
 
     private Boolean containsBeatableOpponentBuildingFor(TrainedPlayerUnit trainedPlayerUnit) {
-        return game.getOpponentBuildingAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
+        return gameRepository.getOpponentBuildingAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
     }
 
     public boolean isInMyTerritoryOrInItsNeighborhood() {
         return isInMyTerritory() || position.getNeighbors().stream()
-                .map(game::getCell)
+                .map(gameRepository::getCell)
                 .anyMatch(GameCell::isInMyTerritory);
     }
 
     public boolean isInMyTerritory() {
-        return game.getCellType(position) == CellType.ACTIVE_MINE;
+        return gameRepository.getCellType(position) == CellType.ACTIVE_MINE;
     }
 }

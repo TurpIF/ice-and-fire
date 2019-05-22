@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.cell;
 
 import java.util.ArrayList;
 import java.util.Collection;

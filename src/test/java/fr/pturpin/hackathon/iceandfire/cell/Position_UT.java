@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.cell;
 
 import org.junit.Test;
 

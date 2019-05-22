@@ -1,5 +1,8 @@
-package fr.pturpin.hackathon.iceandfire;
+package fr.pturpin.hackathon.iceandfire.game;
 
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
+import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentBuilding;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerBuilding;
@@ -7,7 +10,7 @@ import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
 import java.util.Optional;
 
-public interface Game {
+public interface GameRepository {
 
     int getPlayerGold();
 

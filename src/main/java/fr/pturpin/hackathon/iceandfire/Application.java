@@ -1,6 +1,8 @@
 package fr.pturpin.hackathon.iceandfire;
 
 import fr.pturpin.hackathon.iceandfire.command.WaitCommand;
+import fr.pturpin.hackathon.iceandfire.game.GameInitialization;
+import fr.pturpin.hackathon.iceandfire.game.GameNewTurn;
 import fr.pturpin.hackathon.iceandfire.reader.GameInputScanner;
 import fr.pturpin.hackathon.iceandfire.reader.GameReader;
 import fr.pturpin.hackathon.iceandfire.writer.GameWriter;
