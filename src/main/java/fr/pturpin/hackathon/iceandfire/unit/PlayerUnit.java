@@ -2,16 +2,36 @@ package fr.pturpin.hackathon.iceandfire.unit;
 
 import fr.pturpin.hackathon.iceandfire.Position;
 
-public interface PlayerUnit {
+public class PlayerUnit {
 
-    boolean canMove();
+    private final int id;
+    private final Position position;
+    private final TrainedPlayerUnit trainedPlayerUnit;
 
-    int getId();
+    public PlayerUnit(int id, Position position, TrainedPlayerUnit trainedPlayerUnit) {
+        this.id = id;
+        this.position = position;
+        this.trainedPlayerUnit = trainedPlayerUnit;
+    }
 
-    Position getPosition();
+    public boolean canMove() {
+        return true;
+    }
 
-    boolean canBeat(OpponentUnit opponentUnit);
+    public int getId() {
+        return id;
+    }
 
-    boolean canBeat(OpponentBuilding opponentBuilding);
+    public Position getPosition() {
+        return position;
+    }
+
+    public boolean canBeat(OpponentUnit opponentUnit) {
+        return trainedPlayerUnit.canBeat(opponentUnit);
+    }
+
+    public boolean canBeat(OpponentBuilding opponentBuilding) {
+        return trainedPlayerUnit.canBeat(opponentBuilding);
+    }
 
 }
