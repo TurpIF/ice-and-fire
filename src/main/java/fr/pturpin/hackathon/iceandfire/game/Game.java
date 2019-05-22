@@ -5,7 +5,6 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,7 +27,7 @@ public class Game implements GameRepository {
     }
 
     public GameStrategy asStrategy() {
-        return Collections::emptyList;
+        return new GameStrategyImpl(this);
     }
 
     @Override

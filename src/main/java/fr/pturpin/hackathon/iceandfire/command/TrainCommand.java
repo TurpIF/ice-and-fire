@@ -16,6 +16,10 @@ public class TrainCommand implements GameCommand {
         this.gameRepository = gameRepository;
     }
 
+    public GameCell getCell() {
+        return gameCell;
+    }
+
     @Override
     public boolean isValid() {
         boolean hasEnoughGold = gameRepository.getPlayerGold() >= 10;

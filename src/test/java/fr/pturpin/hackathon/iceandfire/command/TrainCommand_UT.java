@@ -53,6 +53,13 @@ public class TrainCommand_UT {
     }
 
     @Test
+    public void getCell_GivenCell_ReturnsIt() throws Exception {
+        GameCell commandCell = command.getCell();
+
+        assertThat(commandCell).isEqualTo(cell);
+    }
+
+    @Test
     public void isValid_GivenValidTrain_ReturnsTrue() throws Exception {
         givenValidTrain();
 
