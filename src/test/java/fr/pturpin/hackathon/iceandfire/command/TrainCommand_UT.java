@@ -72,6 +72,16 @@ public class TrainCommand_UT {
     }
 
     @Test
+    public void isValid_GivenWallCell_ReturnsFalse() throws Exception {
+        givenValidTrain();
+        when(cell.isWall()).thenReturn(true);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isFalse();
+    }
+
+    @Test
     public void isValid_GivenCellNotInMyTerritoryNorInItsDirectNeighborhood_ReturnsFalse() throws Exception {
         givenValidTrain();
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(false);
@@ -107,6 +117,7 @@ public class TrainCommand_UT {
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
         when(gameRepository.getPlayerGold()).thenReturn(10);
         when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(true);
+        when(cell.isWall()).thenReturn(false);
     }
 
     private void givenLevel(int level) {

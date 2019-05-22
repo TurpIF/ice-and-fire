@@ -58,6 +58,10 @@ public class GameCell {
         return gameRepository.getCellType(position) == CellType.ACTIVE_MINE;
     }
 
+    public boolean isWall() {
+        return gameRepository.getCellType(position) == CellType.NIL;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

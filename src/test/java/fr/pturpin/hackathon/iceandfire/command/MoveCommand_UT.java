@@ -49,6 +49,13 @@ public class MoveCommand_UT {
     }
 
     @Test
+    public void getCell_GivenCell_ReturnsIt() throws Exception {
+        GameCell commandCell = command.getCell();
+
+        assertThat(commandCell).isEqualTo(cell);
+    }
+
+    @Test
     public void isValid_GivenUnitThatCantMove_ReturnsFalse() throws Exception {
         givenValidMove();
 
@@ -71,8 +78,8 @@ public class MoveCommand_UT {
 
         assertThat(valid).isEqualTo(false);
     }
-
     // FIXME It is possible to give distance greater than one but for the moment, we limit this feature.
+
     @Test
     public void isValid_GivenDistanceGreaterThanOne_ReturnsFalse() throws Exception {
         givenValidMove();
@@ -108,6 +115,17 @@ public class MoveCommand_UT {
     }
 
     @Test
+    public void isValid_GivenWallCell_ReturnsFalse() throws Exception {
+        givenValidMove();
+
+        when(cell.isWall()).thenReturn(true);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isEqualTo(false);
+    }
+
+    @Test
     public void isValid_GivenValidCondition_ReturnsTrue() throws Exception {
         givenValidMove();
 
@@ -122,6 +140,7 @@ public class MoveCommand_UT {
         when(playerUnit.canMove()).thenReturn(true);
         when(cell.containsAlly()).thenReturn(false);
         when(cell.containsBeatableOpponentFor(playerUnit)).thenReturn(true);
+        when(cell.isWall()).thenReturn(false);
     }
 
     private void givenCellPosition(int x, int y) {

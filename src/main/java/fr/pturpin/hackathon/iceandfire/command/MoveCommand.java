@@ -13,9 +13,14 @@ public class MoveCommand implements GameCommand {
         this.gameCell = gameCell;
     }
 
+    public GameCell getCell() {
+        return gameCell;
+    }
+
     @Override
     public boolean isValid() {
         return playerUnit.canMove()
+                && !gameCell.isWall()
                 && gameCell.getPosition().distanceTo(playerUnit.getPosition()) == 1
                 && !gameCell.containsAlly()
                 && gameCell.containsBeatableOpponentFor(playerUnit);

@@ -237,6 +237,24 @@ public class GameCell_UT {
         assertThat(inMyTerritoryOrInItsNeighborhood).isFalse();
     }
 
+    @Test
+    public void isWall_GivenNilCell_ReturnsTrue() {
+        when(gameRepository.getCellType(position)).thenReturn(CellType.NIL);
+
+        boolean wall = cell.isWall();
+
+        assertThat(wall).isTrue();
+    }
+
+    @Test
+    public void isWall_GivenNoNilCell_ReturnsFalse() {
+        when(gameRepository.getCellType(position)).thenReturn(CellType.NEUTRAL);
+
+        boolean wall = cell.isWall();
+
+        assertThat(wall).isFalse();
+    }
+
     private void givenPosition(int x, int y) {
         position = new Position(x, y);
         cell = new GameCell(gameRepository, position);

@@ -20,6 +20,7 @@ public class TrainCommand implements GameCommand {
     public boolean isValid() {
         boolean hasEnoughGold = gameRepository.getPlayerGold() >= 10;
         return hasEnoughGold
+                && !gameCell.isWall()
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
                 && gameCell.containsBeatableOpponentFor(trainedPlayerUnit);
