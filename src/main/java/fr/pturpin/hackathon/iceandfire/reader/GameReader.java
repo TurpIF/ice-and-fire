@@ -106,12 +106,16 @@ public class GameReader {
 
     private BuildingType readBuildingType() {
         int buildingId = inputSource.nextInt();
-        if (buildingId == 0) {
-            return BuildingType.QG;
-        } else if (buildingId == 1) {
-            return BuildingType.MINE;
+        switch (buildingId) {
+            case 0:
+                return BuildingType.QG;
+            case 1:
+                return BuildingType.MINE;
+            case 2:
+                return BuildingType.TOWER;
+            default:
+                throw new IllegalArgumentException("Unknown building id: `" + buildingId + "`");
         }
-        throw new IllegalArgumentException("Unknown building id: `" + buildingId + "`");
     }
 
     private void readUnits(GameNewTurn newTurn) {
