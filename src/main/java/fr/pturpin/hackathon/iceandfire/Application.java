@@ -1,60 +1,56 @@
 package fr.pturpin.hackathon.iceandfire;
 
+import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.WaitCommand;
-import fr.pturpin.hackathon.iceandfire.game.GameInitialization;
-import fr.pturpin.hackathon.iceandfire.game.GameNewTurn;
-import fr.pturpin.hackathon.iceandfire.reader.GameInputScanner;
-import fr.pturpin.hackathon.iceandfire.reader.GameReader;
+import fr.pturpin.hackathon.iceandfire.game.GameConfiguration;
 import fr.pturpin.hackathon.iceandfire.writer.GameWriter;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.util.Scanner;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Application {
 
+    private final GameConfiguration configuration;
+
+    public Application(GameConfiguration configuration) {
+        this.configuration = configuration;
+    }
+
+    public void init() {
+        configuration.gameReader().readInit(configuration.gameInitialization());
+    }
+
+    public void update() {
+        configuration.gameReader().readNewTurn(configuration.gameNewTurn());
+    }
+
+    public Collection<GameCommand> buildCommands() {
+        return configuration.gameStrategy().buildCommands();
+    }
+
+    public void printCommands(Collection<GameCommand> commands) {
+        if (commands.isEmpty()) {
+            printCommands(Collections.singletonList(new WaitCommand()));
+            return;
+        }
+
+        GameWriter writer = configuration.gameWriter();
+
+        writer.startSequence();
+        commands.forEach(writer::add);
+        writer.endSequence();
+    }
+
     public static void main(String[] args) {
-        Application application = new Application();
+        Application application = new Application(new GameConfiguration());
 
-        GameReader gameReader = application.getGameReader();
-        GameWriter gameWriter = application.getGameWriter();
-
-        GameInitialization initialization = application.getGameInitialization();
-        GameNewTurn newTurn = application.getGameNewTurn();
-
-        gameReader.readInit(initialization);
+        application.init();
 
         while (true) {
-            gameReader.readNewTurn(newTurn);
-
-            gameWriter.startSequence();
-            gameWriter.add(new WaitCommand());
-            gameWriter.endSequence();
+            application.update();
+            Collection<GameCommand> commands = application.buildCommands();
+            application.printCommands(commands);
         }
-    }
-
-    private GameWriter getGameWriter() {
-        return new GameWriter(System.out);
-    }
-
-    private GameReader getGameReader() {
-        GameInputScanner inputSource = new GameInputScanner(new Scanner(System.in));
-        return new GameReader(inputSource);
-    }
-
-    private GameInitialization getGameInitialization() {
-        return mock(GameInitialization.class);
-    }
-
-    private GameNewTurn getGameNewTurn() {
-        return mock(GameNewTurn.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T mock(Class<T> klass) {
-        InvocationHandler handler = (proxy, method, args) -> null;
-        Object proxy = Proxy.newProxyInstance(Application.class.getClassLoader(), new Class[]{ klass }, handler);
-        return (T) proxy;
     }
 
 }
