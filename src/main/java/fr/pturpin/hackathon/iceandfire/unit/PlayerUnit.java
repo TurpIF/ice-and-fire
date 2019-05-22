@@ -10,4 +10,8 @@ public interface PlayerUnit {
 
     Position getPosition();
 
+    boolean canBeat(OpponentUnit opponentUnit);
+
+    boolean canBeat(OpponentBuilding opponentBuilding);
+
 }

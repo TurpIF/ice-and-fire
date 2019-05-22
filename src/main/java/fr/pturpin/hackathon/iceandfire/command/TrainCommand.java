@@ -2,15 +2,16 @@ package fr.pturpin.hackathon.iceandfire.command;
 
 import fr.pturpin.hackathon.iceandfire.Game;
 import fr.pturpin.hackathon.iceandfire.GameCell;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 
 public class TrainCommand implements GameCommand {
 
-    private final int level;
+    private final TrainedPlayerUnit trainedPlayerUnit;
     private final GameCell gameCell;
     private final Game game;
 
-    public TrainCommand(int level, GameCell gameCell, Game game) {
-        this.level = level;
+    public TrainCommand(TrainedPlayerUnit trainedPlayerUnit, GameCell gameCell, Game game) {
+        this.trainedPlayerUnit = trainedPlayerUnit;
         this.gameCell = gameCell;
         this.game = game;
     }
@@ -21,7 +22,7 @@ public class TrainCommand implements GameCommand {
         return hasEnoughGold
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
-                && gameCell.containsBeatableOpponentForLevel(level);
+                && gameCell.containsBeatableOpponentFor(trainedPlayerUnit);
 
         // TODO In case of unit or building of the opponent on the case,
         //  the trained unit should be able to defeat them. Else the command is not valid and ignored.
@@ -29,6 +30,6 @@ public class TrainCommand implements GameCommand {
 
     @Override
     public String getFormattedCommand() {
-        return String.format("TRAIN %d %d %d", level, gameCell.getPosition().getX(), gameCell.getPosition().getY());
+        return String.format("TRAIN %d %d %d", trainedPlayerUnit.getLevel(), gameCell.getPosition().getX(), gameCell.getPosition().getY());
     }
 }

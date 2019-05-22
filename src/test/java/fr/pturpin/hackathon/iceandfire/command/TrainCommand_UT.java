@@ -3,6 +3,7 @@ package fr.pturpin.hackathon.iceandfire.command;
 import fr.pturpin.hackathon.iceandfire.Game;
 import fr.pturpin.hackathon.iceandfire.GameCell;
 import fr.pturpin.hackathon.iceandfire.Position;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +22,14 @@ public class TrainCommand_UT {
     @Mock
     private Game game;
 
+    @Mock
+    private TrainedPlayerUnit trainedPlayerUnit;
+
     private TrainCommand command;
 
     @Before
     public void setUp() throws Exception {
-        command = new TrainCommand(1, cell, game);
+        command = new TrainCommand(trainedPlayerUnit, cell, game);
     }
 
     @Test
@@ -81,7 +85,7 @@ public class TrainCommand_UT {
     public void isValid_GivenCellWithUnbeatableOpponent_ReturnsFalse() throws Exception {
         givenLevel(1);
         givenValidTrain();
-        when(cell.containsBeatableOpponentForLevel(1)).thenReturn(false);
+        when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(false);
 
         boolean valid = command.isValid();
 
@@ -102,11 +106,11 @@ public class TrainCommand_UT {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
         when(game.getPlayerGold()).thenReturn(10);
-        when(cell.containsBeatableOpponentForLevel(1)).thenReturn(true);
+        when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(true);
     }
 
     private void givenLevel(int level) {
-        command = new TrainCommand(level, cell, game);
+        when(trainedPlayerUnit.getLevel()).thenReturn(level);
     }
 
 }

@@ -1,8 +1,14 @@
 package fr.pturpin.hackathon.iceandfire;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 public final class Position {
+
+    private static final int MIN_POSITION = 0;
+    private static final int MAX_POSITION = 11;
 
     private final int x;
     private final int y;
@@ -15,7 +21,7 @@ public final class Position {
     }
 
     private void checkValidity() {
-        if (x < 0 || x >= 12 || y < 0 || y >= 12) {
+        if (x < MIN_POSITION || x > MAX_POSITION || y < MIN_POSITION || y > MAX_POSITION) {
             throw new IllegalArgumentException();
         }
     }
@@ -30,6 +36,28 @@ public final class Position {
 
     public int getY() {
         return y;
+    }
+
+    public Collection<Position> getNeighbors() {
+        List<Position> neighbors = new ArrayList<>();
+
+        if (x > MIN_POSITION) {
+            neighbors.add(new Position(x - 1, y));
+        }
+
+        if (x < MAX_POSITION) {
+            neighbors.add(new Position(x + 1, y));
+        }
+
+        if (y > MIN_POSITION) {
+            neighbors.add(new Position(x, y - 1));
+        }
+
+        if (y < MAX_POSITION) {
+            neighbors.add(new Position(x, y + 1));
+        }
+
+        return neighbors;
     }
 
     @Override
