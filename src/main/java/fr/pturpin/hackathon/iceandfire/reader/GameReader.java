@@ -42,33 +42,33 @@ public class GameReader {
     }
 
     private void readGrid(GameNewTurn newTurn) {
-        CaseType[] grid = new CaseType[12 * 12];
+        CellType[] grid = new CellType[12 * 12];
         for (int i = 0; i < 12; i++) {
             String row = inputSource.nextLine();
             for (int j = 0; j < 12; j++) {
                 int cellIndex = i * 12 + j;
-                CaseType caseType = readCaseType(row.charAt(j));
-                grid[cellIndex] = caseType;
+                CellType cellType = readCellType(row.charAt(j));
+                grid[cellIndex] = cellType;
             }
         }
 
         newTurn.setGrid(grid);
     }
 
-    private CaseType readCaseType(char cellChar) {
+    private CellType readCellType(char cellChar) {
         switch (cellChar) {
             case '#':
-                return CaseType.NIL;
+                return CellType.NIL;
             case '.':
-                return CaseType.NEUTRAL;
+                return CellType.NEUTRAL;
             case 'O':
-                return CaseType.ACTIVE_MINE;
+                return CellType.ACTIVE_MINE;
             case 'o':
-                return CaseType.INACTIVE_MINE;
+                return CellType.INACTIVE_MINE;
             case 'X':
-                return CaseType.ACTIVE_THEIR;
+                return CellType.ACTIVE_THEIR;
             case 'x':
-                return CaseType.INACTIVE_THEIR;
+                return CellType.INACTIVE_THEIR;
             default:
                 throw new IllegalArgumentException("Unknown cell type: `" + cellChar + "`");
         }

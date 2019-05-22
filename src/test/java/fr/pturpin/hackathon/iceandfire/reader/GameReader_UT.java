@@ -25,13 +25,13 @@ public class GameReader_UT {
     private GameNewTurn newTurn;
 
     private GameReader reader;
-    private CaseType[] expectedGrid;
+    private CellType[] expectedGrid;
 
     @Before
     public void setUp() throws Exception {
         inputSource = new StubGameInputSource();
         reader = new GameReader(inputSource);
-        expectedGrid = new CaseType[12 * 12];
+        expectedGrid = new CellType[12 * 12];
     }
 
     @Test
@@ -79,7 +79,7 @@ public class GameReader_UT {
 
         reader.readNewTurn(newTurn);
 
-        Arrays.fill(expectedGrid, CaseType.NEUTRAL);
+        Arrays.fill(expectedGrid, CellType.NEUTRAL);
 
         InOrder inOrder = inOrder(newTurn);
         inOrder.verify(newTurn).setPlayerGold(0);
@@ -116,7 +116,7 @@ public class GameReader_UT {
 
         reader.readNewTurn(newTurn);
 
-        Arrays.fill(expectedGrid, CaseType.NIL);
+        Arrays.fill(expectedGrid, CellType.NIL);
 
         verify(newTurn).setGrid(expectedGrid);
     }
@@ -130,7 +130,7 @@ public class GameReader_UT {
 
         reader.readNewTurn(newTurn);
 
-        Arrays.fill(expectedGrid, CaseType.ACTIVE_MINE);
+        Arrays.fill(expectedGrid, CellType.ACTIVE_MINE);
 
         verify(newTurn).setGrid(expectedGrid);
     }
@@ -147,13 +147,13 @@ public class GameReader_UT {
 
         reader.readNewTurn(newTurn);
 
-        Arrays.fill(expectedGrid, CaseType.NEUTRAL);
-        expectedGrid[0] = CaseType.NEUTRAL;
-        expectedGrid[1] = CaseType.NIL;
-        expectedGrid[2] = CaseType.ACTIVE_MINE;
-        expectedGrid[3] = CaseType.INACTIVE_MINE;
-        expectedGrid[4] = CaseType.ACTIVE_THEIR;
-        expectedGrid[5] = CaseType.INACTIVE_THEIR;
+        Arrays.fill(expectedGrid, CellType.NEUTRAL);
+        expectedGrid[0] = CellType.NEUTRAL;
+        expectedGrid[1] = CellType.NIL;
+        expectedGrid[2] = CellType.ACTIVE_MINE;
+        expectedGrid[3] = CellType.INACTIVE_MINE;
+        expectedGrid[4] = CellType.ACTIVE_THEIR;
+        expectedGrid[5] = CellType.INACTIVE_THEIR;
 
         verify(newTurn).setGrid(expectedGrid);
     }
@@ -242,13 +242,13 @@ public class GameReader_UT {
 
         reader.readNewTurn(newTurn);
 
-        Arrays.fill(expectedGrid, CaseType.NEUTRAL);
-        expectedGrid[0] = CaseType.NEUTRAL;
-        expectedGrid[1] = CaseType.NIL;
-        expectedGrid[2] = CaseType.ACTIVE_MINE;
-        expectedGrid[3] = CaseType.INACTIVE_MINE;
-        expectedGrid[4] = CaseType.ACTIVE_THEIR;
-        expectedGrid[5] = CaseType.INACTIVE_THEIR;
+        Arrays.fill(expectedGrid, CellType.NEUTRAL);
+        expectedGrid[0] = CellType.NEUTRAL;
+        expectedGrid[1] = CellType.NIL;
+        expectedGrid[2] = CellType.ACTIVE_MINE;
+        expectedGrid[3] = CellType.INACTIVE_MINE;
+        expectedGrid[4] = CellType.ACTIVE_THEIR;
+        expectedGrid[5] = CellType.INACTIVE_THEIR;
 
         verify(newTurn).setPlayerGold(1);
         verify(newTurn).setPlayerRevenue(2);

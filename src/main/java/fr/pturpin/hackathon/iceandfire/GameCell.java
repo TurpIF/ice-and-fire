@@ -52,6 +52,6 @@ public class GameCell {
     }
 
     public boolean isInMyTerritory() {
-        return game.getCellType(position) == CaseType.ACTIVE_MINE;
+        return game.getCellType(position) == CellType.ACTIVE_MINE;
     }
 }

@@ -176,7 +176,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritory_GivenCaseTypeActiveOfMine_ReturnsTrue() throws Exception {
-        when(game.getCellType(position)).thenReturn(CaseType.ACTIVE_MINE);
+        when(game.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
 
         boolean isInMyTerritory = cell.isInMyTerritory();
 
@@ -185,7 +185,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritory_GivenCaseTypeNotActiveOfMine_ReturnsFalse() throws Exception {
-        when(game.getCellType(position)).thenReturn(CaseType.INACTIVE_MINE);
+        when(game.getCellType(position)).thenReturn(CellType.INACTIVE_MINE);
 
         boolean isInMyTerritory = cell.isInMyTerritory();
 
@@ -194,7 +194,7 @@ public class GameCell_UT {
 
     @Test
     public void isInMyTerritoryOrInItsNeighborhood_GivenCellInTerritory_ReturnsTrue() throws Exception {
-        when(game.getCellType(position)).thenReturn(CaseType.ACTIVE_MINE);
+        when(game.getCellType(position)).thenReturn(CellType.ACTIVE_MINE);
 
         boolean inMyTerritoryOrInItsNeighborhood = cell.isInMyTerritoryOrInItsNeighborhood();
 

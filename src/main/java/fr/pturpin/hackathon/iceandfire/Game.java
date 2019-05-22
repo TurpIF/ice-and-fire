@@ -19,7 +19,7 @@ public interface Game {
 
     Optional<OpponentBuilding> getOpponentBuildingAt(Position position);
 
-    CaseType getCellType(Position position);
+    CellType getCellType(Position position);
 
     GameCell getCell(Position position);
 }

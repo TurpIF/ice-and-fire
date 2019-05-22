@@ -10,7 +10,7 @@ public interface GameNewTurn {
 
     void setOpponentRevenue(int opponentRevenue);
 
-    void setGrid(CaseType[] grid);
+    void setGrid(CellType[] grid);
 
     void setBuildingCount(int buildingCount);
 
