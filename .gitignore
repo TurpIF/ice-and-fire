@@ -18,3 +18,5 @@ out/
 *.rar
 hs_err_pid*
 .attach_pid*
+
+CHelperReport.txt

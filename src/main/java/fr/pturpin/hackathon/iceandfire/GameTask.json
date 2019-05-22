@@ -1,0 +1,29 @@
+{
+  "name" : "GameTask",
+  "testType" : "SINGLE",
+  "input" : {
+    "type" : "STANDARD",
+    "fileName" : "input.txt"
+  },
+  "output" : {
+    "type" : "STANDARD",
+    "fileName" : "output.txt"
+  },
+  "tests" : [ ],
+  "location" : "src/main/java/fr/pturpin/hackathon/iceandfire",
+  "vmArgs" : "-Xmx256m -Xss64m",
+  "mainClass" : "Player",
+  "taskClass" : "fr.pturpin.hackathon.iceandfire.GameTask",
+  "checkerClass" : "net.egork.chelper.checkers.TokenChecker",
+  "checkerParameters" : "",
+  "testClasses" : [ ],
+  "date" : "2019.05.22",
+  "contestName" : "IceAndFire",
+  "truncate" : true,
+  "inputClass" : "java.util.Scanner",
+  "outputClass" : "java.io.PrintStream",
+  "includeLocale" : false,
+  "failOnOverflow" : false,
+  "interactive" : false,
+  "interactor" : "net.egork.chelper.tester.Interactor"
+}

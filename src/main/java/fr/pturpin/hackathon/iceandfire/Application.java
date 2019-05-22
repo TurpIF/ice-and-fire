@@ -41,16 +41,4 @@ public class Application {
         writer.endSequence();
     }
 
-    public static void main(String[] args) {
-        Application application = new Application(new GameConfiguration());
-
-        application.init();
-
-        while (true) {
-            application.update();
-            Collection<GameCommand> commands = application.buildCommands();
-            application.printCommands(commands);
-        }
-    }
-
 }

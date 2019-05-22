@@ -4,6 +4,7 @@ import fr.pturpin.hackathon.iceandfire.reader.GameInputScanner;
 import fr.pturpin.hackathon.iceandfire.reader.GameReader;
 import fr.pturpin.hackathon.iceandfire.writer.GameWriter;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class GameConfiguration {
@@ -12,10 +13,10 @@ public class GameConfiguration {
     private final GameReader gameReader;
     private final Game game;
 
-    public GameConfiguration() {
-        gameWriter = new GameWriter(System.out);
+    public GameConfiguration(Scanner in, PrintStream out) {
+        gameWriter = new GameWriter(out);
 
-        GameInputScanner inputSource = new GameInputScanner(new Scanner(System.in));
+        GameInputScanner inputSource = new GameInputScanner(in);
         gameReader = new GameReader(inputSource);
 
         game = new Game();
