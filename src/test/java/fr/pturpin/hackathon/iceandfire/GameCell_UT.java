@@ -30,15 +30,16 @@ public class GameCell_UT {
     @Mock
     private TrainedPlayerUnit trainedPlayerUnit;
 
+    @Mock
     private OpponentUnit opponentUnit;
+
+    @Mock
     private OpponentBuilding opponentBuilding;
 
     @Before
     public void setUp() throws Exception {
         position = new Position(0, 0);
         cell = new GameCell(game, position);
-        opponentUnit = new OpponentUnit();
-        opponentBuilding = new OpponentBuilding();
     }
 
     @Test
