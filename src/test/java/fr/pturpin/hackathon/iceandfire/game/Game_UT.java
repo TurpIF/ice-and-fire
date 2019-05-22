@@ -34,7 +34,7 @@ public class Game_UT {
     @Test
     public void getCellType_GivenGrid_ReturnsCellAtGivenPosition() throws Exception {
         CellType[] grid = getFullGrid();
-        grid[4 * 12 + 6] = CellType.INACTIVE_THEIR;
+        grid[6 * 12 + 4] = CellType.INACTIVE_THEIR;
 
         game.onNewTurn().setGrid(grid);
         CellType cellType = game.getCellType(new Position(4, 6));

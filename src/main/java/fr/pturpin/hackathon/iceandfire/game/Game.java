@@ -58,7 +58,7 @@ public class Game implements GameRepository {
 
     @Override
     public CellType getCellType(Position position) {
-        int index = position.getX() * 12 + position.getY();
+        int index = position.getY() * 12 + position.getX();
         return grid[index];
     }
 
