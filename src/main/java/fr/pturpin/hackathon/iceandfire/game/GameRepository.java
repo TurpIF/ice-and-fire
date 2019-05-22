@@ -25,4 +25,8 @@ public interface GameRepository {
     CellType getCellType(Position position);
 
     GameCell getCell(Position position);
+
+    boolean isMineSpot(Position position);
+
+    int getPlayerMineCount();
 }

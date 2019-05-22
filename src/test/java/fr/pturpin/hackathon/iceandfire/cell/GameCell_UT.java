@@ -29,6 +29,9 @@ public class GameCell_UT {
     private PlayerUnit playerUnit;
 
     @Mock
+    private PlayerBuilding playerBuilding;
+
+    @Mock
     private TrainedPlayerUnit trainedPlayerUnit;
 
     @Mock
@@ -253,6 +256,80 @@ public class GameCell_UT {
         boolean wall = cell.isWall();
 
         assertThat(wall).isFalse();
+    }
+
+    @Test
+    public void isMineSpot_GivenGameWithoutSpot_ReturnsFalse() throws Exception {
+        when(gameRepository.isMineSpot(position)).thenReturn(false);
+
+        boolean mineSpot = cell.isMineSpot();
+
+        assertThat(mineSpot).isFalse();
+    }
+
+    @Test
+    public void isMineSpot_GivenGameWithSpot_ReturnsTrue() throws Exception {
+        when(gameRepository.isMineSpot(position)).thenReturn(true);
+
+        boolean mineSpot = cell.isMineSpot();
+
+        assertThat(mineSpot).isTrue();
+    }
+
+    @Test
+    public void isOccupied_GivenGameWithNoUnitNorBuilding_ReturnsFalse() throws Exception {
+        givenFreePosition();
+
+        boolean occupied = cell.isOccupied();
+
+        assertThat(occupied).isFalse();
+    }
+
+    @Test
+    public void isOccupied_GivenGameWithPlayerUnit_ReturnsTrue() throws Exception {
+        givenFreePosition();
+        when(gameRepository.getPlayerUnitAt(position)).thenReturn(Optional.of(playerUnit));
+
+        boolean occupied = cell.isOccupied();
+
+        assertThat(occupied).isTrue();
+    }
+
+    @Test
+    public void isOccupied_GivenGameWithPlayerBuilding_ReturnsTrue() throws Exception {
+        givenFreePosition();
+        when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.of(playerBuilding));
+
+        boolean occupied = cell.isOccupied();
+
+        assertThat(occupied).isTrue();
+    }
+
+    @Test
+    public void isOccupied_GivenGameWithOpponentUnit_ReturnsTrue() throws Exception {
+        givenFreePosition();
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
+
+        boolean occupied = cell.isOccupied();
+
+        assertThat(occupied).isTrue();
+    }
+
+    @Test
+    public void isOccupied_GivenGameWithOpponentBuilding_ReturnsTrue() throws Exception {
+        givenFreePosition();
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+
+        boolean occupied = cell.isOccupied();
+
+        assertThat(occupied).isTrue();
+    }
+
+    private void givenFreePosition() {
+        when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
     }
 
     private void givenPosition(int x, int y) {

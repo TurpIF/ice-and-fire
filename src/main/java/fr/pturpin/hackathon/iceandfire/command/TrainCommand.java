@@ -28,9 +28,6 @@ public class TrainCommand implements GameCommand {
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
                 && gameCell.containsBeatableOpponentFor(trainedPlayerUnit);
-
-        // TODO In case of unit or building of the opponent on the case,
-        //  the trained unit should be able to defeat them. Else the command is not valid and ignored.
     }
 
     @Override

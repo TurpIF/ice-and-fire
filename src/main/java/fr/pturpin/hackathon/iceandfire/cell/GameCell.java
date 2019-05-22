@@ -62,6 +62,17 @@ public class GameCell {
         return gameRepository.getCellType(position) == CellType.NIL;
     }
 
+    public boolean isMineSpot() {
+        return gameRepository.isMineSpot(position);
+    }
+
+    public boolean isOccupied() {
+        return gameRepository.getPlayerUnitAt(position).isPresent()
+                || gameRepository.getPlayerBuildingAt(position).isPresent()
+                || gameRepository.getOpponentUnitAt(position).isPresent()
+                || gameRepository.getOpponentBuildingAt(position).isPresent();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

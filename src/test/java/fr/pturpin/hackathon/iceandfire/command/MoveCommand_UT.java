@@ -78,8 +78,8 @@ public class MoveCommand_UT {
 
         assertThat(valid).isEqualTo(false);
     }
-    // FIXME It is possible to give distance greater than one but for the moment, we limit this feature.
 
+    // FIXME It is possible to give distance greater than one but for the moment, we limit this feature.
     @Test
     public void isValid_GivenDistanceGreaterThanOne_ReturnsFalse() throws Exception {
         givenValidMove();

@@ -5,9 +5,7 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class Game implements GameRepository {
 
@@ -17,6 +15,7 @@ public class Game implements GameRepository {
     private Map<Position, OpponentUnit> opponentUnits = new HashMap<>();
     private Map<Position, PlayerBuilding> playerBuildings = new HashMap<>();
     private Map<Position, OpponentBuilding> opponentBuildings = new HashMap<>();
+    private Set<Position> mineSpots = new HashSet<>();
 
     public GameInitialization onInitialization() {
         return new OnInitialization();
@@ -64,6 +63,18 @@ public class Game implements GameRepository {
     @Override
     public GameCell getCell(Position position) {
         return new GameCell(this, position);
+    }
+
+    @Override
+    public boolean isMineSpot(Position position) {
+        return mineSpots.contains(position);
+    }
+
+    @Override
+    public int getPlayerMineCount() {
+        return (int) playerBuildings.values().stream()
+                .filter(building -> building.getType() == BuildingType.MINE)
+                .count();
     }
 
     private class OnNewTurn implements GameNewTurn {
@@ -141,12 +152,11 @@ public class Game implements GameRepository {
 
         @Override
         public void setMineSpotCount(int mineSpotCount) {
-            // TODO
         }
 
         @Override
         public void addMineSpot(Position position) {
-            // TODO
+            mineSpots.add(position);
         }
     }
 }

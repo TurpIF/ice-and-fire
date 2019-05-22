@@ -182,6 +182,22 @@ public class GameReader_UT {
     }
 
     @Test
+    public void readNewTurn_GivenMineBuildings_SetBuilding() throws Exception {
+        givenEmptyGold();
+        givenGridFullOf('.');
+
+        inputSource.thenReturn(1);
+        givenBuilding(0, 1, 1, 2);
+
+        givenNoUnits();
+
+        reader.readNewTurn(newTurn);
+
+        verify(newTurn).setBuildingCount(1);
+        verify(newTurn).addBuilding(Owner.ME, BuildingType.MINE, new Position(1, 2));
+    }
+
+    @Test
     public void readNewTurn_GivenUnits_SetUnits() throws Exception {
         givenEmptyGold();
         givenGridFullOf('.');

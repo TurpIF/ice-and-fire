@@ -145,6 +145,20 @@ public class Game_UT {
     }
 
     @Test
+    public void getPlayerBuildingAt_GivenOwnedBuilding_ReturnsTheBuilding2() throws Exception {
+        game.onNewTurn().setBuildingCount(1);
+        game.onNewTurn().addBuilding(Owner.ME, BuildingType.MINE, position);
+
+        Optional<PlayerBuilding> playerBuilding = game.getPlayerBuildingAt(position);
+
+        assertThat(playerBuilding)
+                .isNotEmpty()
+                .hasValueSatisfying(building -> {
+                    assertThat(building.getType()).isEqualTo(BuildingType.MINE);
+                });
+    }
+
+    @Test
     public void getPlayerBuildingAt_GivenUpdateWithNoOwnedBuilding_ReturnsEmpty() throws Exception {
         game.onNewTurn().setBuildingCount(1);
         game.onNewTurn().addBuilding(Owner.ME, BuildingType.QG, position);
@@ -181,6 +195,20 @@ public class Game_UT {
     }
 
     @Test
+    public void getOpponentBuildingAt_GivenOpponentBuilding_ReturnsTheBuilding2() throws Exception {
+        game.onNewTurn().setBuildingCount(1);
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.MINE, position);
+
+        Optional<OpponentBuilding> opponentBuilding = game.getOpponentBuildingAt(position);
+
+        assertThat(opponentBuilding)
+                .isNotEmpty()
+                .hasValueSatisfying(building -> {
+                    assertThat(building.getType()).isEqualTo(BuildingType.MINE);
+                });
+    }
+
+    @Test
     public void getOpponentBuildingAt_GivenUpdateWithNoOpponentBuilding_ReturnsEmpty() throws Exception {
         game.onNewTurn().setBuildingCount(1);
         game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.QG, position);
@@ -190,6 +218,46 @@ public class Game_UT {
         Optional<OpponentBuilding> opponentBuilding = game.getOpponentBuildingAt(position);
 
         assertThat(opponentBuilding).isEmpty();
+    }
+
+    @Test
+    public void getPlayerMineCount_GivenNoMine_Returns0() throws Exception {
+        int playerMineCount = game.getPlayerMineCount();
+
+        assertThat(playerMineCount).isEqualTo(0);
+    }
+
+    @Test
+    public void getPlayerMineCount_GivenSomeMines_ReturnsTheCount() throws Exception {
+        game.onNewTurn().setBuildingCount(1);
+        game.onNewTurn().addBuilding(Owner.ME, BuildingType.MINE, new Position(0, 1));
+        game.onNewTurn().setBuildingCount(4);
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.MINE, new Position(0, 0));
+        game.onNewTurn().addBuilding(Owner.ME, BuildingType.MINE, new Position(1, 0));
+        game.onNewTurn().addBuilding(Owner.ME, BuildingType.QG, new Position(2, 0));
+        game.onNewTurn().addBuilding(Owner.ME, BuildingType.MINE, new Position(3, 0));
+
+        int playerMineCount = game.getPlayerMineCount();
+
+        assertThat(playerMineCount).isEqualTo(2);
+    }
+
+    @Test
+    public void isMineSpot_GivenNoSpotAtThePosition_ReturnsFalse() throws Exception {
+        game.onInitialization().addMineSpot(new Position(0, 0));
+
+        boolean mineSpot = game.isMineSpot(new Position(1, 0));
+
+        assertThat(mineSpot).isFalse();
+    }
+
+    @Test
+    public void isMineSpot_GivenSpotAtThePosition_ReturnsFalse() throws Exception {
+        game.onInitialization().addMineSpot(new Position(1, 0));
+
+        boolean mineSpot = game.isMineSpot(new Position(1, 0));
+
+        assertThat(mineSpot).isTrue();
     }
 
     private CellType[] getFullGrid() {

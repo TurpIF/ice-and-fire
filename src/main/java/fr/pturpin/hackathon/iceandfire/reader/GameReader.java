@@ -108,6 +108,8 @@ public class GameReader {
         int buildingId = inputSource.nextInt();
         if (buildingId == 0) {
             return BuildingType.QG;
+        } else if (buildingId == 1) {
+            return BuildingType.MINE;
         }
         throw new IllegalArgumentException("Unknown building id: `" + buildingId + "`");
     }
