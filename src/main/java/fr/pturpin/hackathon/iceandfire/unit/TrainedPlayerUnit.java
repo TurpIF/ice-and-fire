@@ -13,10 +13,14 @@ public class TrainedPlayerUnit {
     }
 
     public boolean canBeat(OpponentUnit opponentUnit) {
-        return level >= opponentUnit.getLevel();
+        return level > opponentUnit.getLevel() || level == 3;
     }
 
     public boolean canBeat(OpponentBuilding opponentBuilding) {
-        return opponentBuilding.getType() == BuildingType.QG;
+        return true;
+    }
+
+    public int getTrainingCost() {
+        return level * 10;
     }
 }

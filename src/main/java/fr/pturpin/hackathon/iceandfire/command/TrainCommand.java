@@ -22,7 +22,7 @@ public class TrainCommand implements GameCommand {
 
     @Override
     public boolean isValid() {
-        boolean hasEnoughGold = gameRepository.getPlayerGold() >= 10;
+        boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedPlayerUnit.getTrainingCost();
         return hasEnoughGold
                 && !gameCell.isWall()
                 && !gameCell.containsAlly()

@@ -112,7 +112,8 @@ public class TrainCommand_UT {
     @Test
     public void isValid_GivenNotEnoughGold_ReturnsFalse() throws Exception {
         givenValidTrain();
-        when(gameRepository.getPlayerGold()).thenReturn(9);
+        when(gameRepository.getPlayerGold()).thenReturn(10);
+        when(trainedPlayerUnit.getTrainingCost()).thenReturn(11);
 
         boolean valid = command.isValid();
 
@@ -123,6 +124,7 @@ public class TrainCommand_UT {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
         when(gameRepository.getPlayerGold()).thenReturn(10);
+        when(trainedPlayerUnit.getTrainingCost()).thenReturn(10);
         when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(true);
         when(cell.isWall()).thenReturn(false);
     }
