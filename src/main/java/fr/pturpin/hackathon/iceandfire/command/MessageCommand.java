@@ -9,6 +9,10 @@ public class MessageCommand implements GameCommand {
     }
 
     @Override
+    public void execute() {
+    }
+
+    @Override
     public boolean isValid() {
         return true;
     }

@@ -18,6 +18,11 @@ public class BuildCommand implements GameCommand {
     }
 
     @Override
+    public void execute() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isValid() {
         return isBuildable()
                 && hasEnoughMoney()

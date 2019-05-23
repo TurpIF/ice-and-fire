@@ -25,6 +25,11 @@ public class TrainCommand implements GameCommand {
     }
 
     @Override
+    public void execute() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isValid() {
         boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedUnit.getTrainingCost();
         return hasEnoughGold

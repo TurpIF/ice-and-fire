@@ -28,4 +28,9 @@ public class WaitCommand_UT {
         assertThat(valid).isTrue();
     }
 
+    @Test
+    public void execute_DoesNothing() throws Exception {
+        command.execute();
+    }
+
 }

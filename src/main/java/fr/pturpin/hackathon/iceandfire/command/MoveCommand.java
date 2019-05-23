@@ -22,6 +22,11 @@ public class MoveCommand implements GameCommand {
     }
 
     @Override
+    public void execute() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isValid() {
         return playerUnit.canMove()
                 && !gameCell.isWall()

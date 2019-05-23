@@ -33,4 +33,11 @@ public class MessageCommand_UT {
         assertThat(valid).isTrue();
     }
 
+    @Test
+    public void execute_DoesNothing() throws Exception {
+        MessageCommand command = new MessageCommand("dummy");
+
+        command.execute();
+    }
+
 }
