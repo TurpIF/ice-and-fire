@@ -25,13 +25,25 @@ public class TrainedPlayerBuilding_UT {
 
     @Test
     public void getBuildingType_GivenType_ReturnsIt() throws Exception {
+        givenMine();
+
         BuildingType buildingType = building.getBuildingType();
 
         assertThat(buildingType).isEqualTo(BuildingType.MINE);
     }
 
     @Test
+    public void getBuildingType_GivenType_ReturnsIt2() throws Exception {
+        givenTower();
+
+        BuildingType buildingType = building.getBuildingType();
+
+        assertThat(buildingType).isEqualTo(BuildingType.TOWER);
+    }
+
+    @Test
     public void getCost_GivenFirstMine_ReturnsBaseCost() throws Exception {
+        givenMine();
         when(gameRepository.getPlayerMineCount()).thenReturn(0);
 
         int cost = building.getCost();
@@ -41,6 +53,7 @@ public class TrainedPlayerBuilding_UT {
 
     @Test
     public void getCost_GivenSecondMine_ReturnsComputedCost() throws Exception {
+        givenMine();
         when(gameRepository.getPlayerMineCount()).thenReturn(1);
 
         int cost = building.getCost();
@@ -50,11 +63,29 @@ public class TrainedPlayerBuilding_UT {
 
     @Test
     public void getCost_GivenNthMine_ReturnsComputedCost() throws Exception {
+        givenMine();
         when(gameRepository.getPlayerMineCount()).thenReturn(4);
 
         int cost = building.getCost();
 
         assertThat(cost).isEqualTo(36);
+    }
+
+    @Test
+    public void getCost_GivenTower_Returns15() throws Exception {
+        givenTower();
+
+        int cost = building.getCost();
+
+        assertThat(cost).isEqualTo(15);
+    }
+
+    private void givenMine() {
+        building = new TrainedPlayerBuilding(BuildingType.MINE, gameRepository);
+    }
+
+    private void givenTower() {
+        building = new TrainedPlayerBuilding(BuildingType.TOWER, gameRepository);
     }
 
 }

@@ -13,6 +13,9 @@ public class TrainedUnit {
     }
 
     public boolean canBeat(OpponentBuilding opponentBuilding) {
+        if (opponentBuilding.getType() == BuildingType.TOWER) {
+            return level == 3;
+        }
         return true;
     }
 
@@ -30,5 +33,9 @@ public class TrainedUnit {
 
     public int getTrainingCost() {
         return level * 10;
+    }
+
+    public boolean canReachTower() {
+        return level == 3;
     }
 }

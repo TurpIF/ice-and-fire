@@ -27,7 +27,12 @@ public class TrainCommand implements GameCommand {
                 && !gameCell.isWall()
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
-                && gameCell.containsBeatableOpponentFor(trainedUnit);
+                && gameCell.containsBeatableOpponentFor(trainedUnit)
+                && isNotProtectedByOpponentTower();
+    }
+
+    private boolean isNotProtectedByOpponentTower() {
+        return !gameCell.isProtectedByOpponentTower() || trainedUnit.canReachTower();
     }
 
     @Override

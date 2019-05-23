@@ -3,7 +3,6 @@ package fr.pturpin.hackathon.iceandfire.command;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
-import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerBuilding;
 
 public class BuildCommand implements GameCommand {
@@ -20,12 +19,26 @@ public class BuildCommand implements GameCommand {
 
     @Override
     public boolean isValid() {
-        boolean hasEnoughMoney = gameRepository.getPlayerGold() >= trainedPlayerBuilding.getCost();
-        boolean isBuildable = trainedPlayerBuilding.getBuildingType() != BuildingType.QG;
-        return isBuildable
-                && hasEnoughMoney
-                && gameCell.isMineSpot()
+        return isBuildable()
+                && hasEnoughMoney()
                 && !gameCell.isOccupied();
+    }
+
+    private boolean hasEnoughMoney() {
+        return gameRepository.getPlayerGold() >= trainedPlayerBuilding.getCost();
+    }
+
+    private boolean isBuildable() {
+        switch (trainedPlayerBuilding.getBuildingType()) {
+            case QG:
+                return false;
+            case MINE:
+                return gameCell.isMineSpot();
+            case TOWER:
+                return !gameCell.isMineSpot();
+            default:
+                return true;
+        }
     }
 
     @Override

@@ -38,6 +38,10 @@ public class PlayerUnit {
         return trainedUnit.canBeat(opponentBuilding);
     }
 
+    public boolean canReachTower() {
+        return trainedUnit.canReachTower();
+    }
+
     TrainedUnit asTrainedUnit() {
         return trainedUnit;
     }

@@ -120,6 +120,38 @@ public class TrainCommand_UT {
         assertThat(valid).isFalse();
     }
 
+    @Test
+    public void isValid_GivenCellProtectedByOpponentTowerAndUnitCantReachIt_ReturnsFalse() throws Exception {
+        givenValidTrain();
+        when(cell.isProtectedByOpponentTower()).thenReturn(true);
+        when(trainedUnit.canReachTower()).thenReturn(false);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isFalse();
+    }
+
+    @Test
+    public void isValid_GivenCellProtectedByOpponentTowerAndUnitCanReachIt_ReturnsTrue() throws Exception {
+        givenValidTrain();
+        when(cell.isProtectedByOpponentTower()).thenReturn(true);
+        when(trainedUnit.canReachTower()).thenReturn(true);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isTrue();
+    }
+
+    @Test
+    public void isValid_GivenCellUnprotectedByOpponentTower_ReturnsTrue() throws Exception {
+        givenValidTrain();
+        when(cell.isProtectedByOpponentTower()).thenReturn(false);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isTrue();
+    }
+
     private void givenValidTrain() {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
@@ -127,6 +159,8 @@ public class TrainCommand_UT {
         when(trainedUnit.getTrainingCost()).thenReturn(10);
         when(cell.containsBeatableOpponentFor(trainedUnit)).thenReturn(true);
         when(cell.isWall()).thenReturn(false);
+        when(cell.isProtectedByOpponentTower()).thenReturn(false);
+        when(trainedUnit.canReachTower()).thenReturn(true);
     }
 
     private void givenLevel(int level) {

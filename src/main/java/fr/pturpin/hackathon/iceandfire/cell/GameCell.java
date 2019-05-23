@@ -1,6 +1,7 @@
 package fr.pturpin.hackathon.iceandfire.cell;
 
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
@@ -71,6 +72,18 @@ public class GameCell {
                 || gameRepository.getPlayerBuildingAt(position).isPresent()
                 || gameRepository.getOpponentUnitAt(position).isPresent()
                 || gameRepository.getOpponentBuildingAt(position).isPresent();
+    }
+
+    public boolean isProtectedByOpponentTower() {
+        return getPosition().getNeighbors().stream()
+                .map(gameRepository::getCell)
+                .anyMatch(GameCell::containsTower);
+    }
+
+    public boolean containsTower() {
+        return gameRepository.getOpponentBuildingAt(position)
+                .filter(building -> building.getType() == BuildingType.TOWER)
+                .isPresent();
     }
 
     @Override

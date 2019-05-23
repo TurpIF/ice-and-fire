@@ -107,6 +107,15 @@ public class PlayerUnit_UT {
         assertThat(level).isEqualTo(1);
     }
 
+    @Test
+    public void canReachTower_GivenTrainedPlayer_AskTheTrainedUnit() throws Exception {
+        when(trainedUnit.canReachTower()).thenReturn(true);
+
+        boolean canReachTower = unit.canReachTower();
+
+        assertThat(canReachTower).isTrue();
+    }
+
     private void givenId(int id) {
         unit = new PlayerUnit(id, unit.getPosition(), trainedUnit);
     }

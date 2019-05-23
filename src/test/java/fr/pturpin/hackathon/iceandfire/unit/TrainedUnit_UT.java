@@ -146,12 +146,61 @@ public class TrainedUnit_UT {
     }
 
     @Test
-    public void canBeat_GivenAnyLevelAndAnyBuilding_ReturnsTrue() throws Exception {
+    public void canBeat_GivenAnyLevelAndAQG_ReturnsTrue() throws Exception {
         givenLevel(1);
+        when(opponentBuilding.getType()).thenReturn(BuildingType.QG);
 
         boolean canBeat = unit.canBeat(opponentBuilding);
 
         assertThat(canBeat).isTrue();
+    }
+
+    @Test
+    public void canBeat_GivenAnyLevelAndAMine_ReturnsTrue() throws Exception {
+        givenLevel(1);
+        when(opponentBuilding.getType()).thenReturn(BuildingType.MINE);
+
+        boolean canBeat = unit.canBeat(opponentBuilding);
+
+        assertThat(canBeat).isTrue();
+    }
+
+    @Test
+    public void canBeat_GivenLevel3AndATower_ReturnsTrue() throws Exception {
+        givenLevel(3);
+        when(opponentBuilding.getType()).thenReturn(BuildingType.TOWER);
+
+        boolean canBeat = unit.canBeat(opponentBuilding);
+
+        assertThat(canBeat).isTrue();
+    }
+
+    @Test
+    public void canBeat_GivenLevelLessThan3AndATower_ReturnsFalse() throws Exception {
+        givenLevel(2);
+        when(opponentBuilding.getType()).thenReturn(BuildingType.TOWER);
+
+        boolean canBeat = unit.canBeat(opponentBuilding);
+
+        assertThat(canBeat).isFalse();
+    }
+
+    @Test
+    public void canReachTower_GivenLevel3_ReturnsTrue() throws Exception {
+        givenLevel(3);
+
+        boolean canReachTower = unit.canReachTower();
+
+        assertThat(canReachTower).isTrue();
+    }
+
+    @Test
+    public void canReachTower_GivenLevelBelow3_ReturnsFalse() throws Exception {
+        givenLevel(2);
+
+        boolean canReachTower = unit.canReachTower();
+
+        assertThat(canReachTower).isFalse();
     }
 
     private void givenLevel(int level) {

@@ -73,13 +73,36 @@ public class BuildCommand_UT {
     }
 
     @Test
-    public void isValid_GivenCellNotOnMineSpot_ReturnsFalse() throws Exception {
+    public void isValid_GivenMineAndCellNotOnMineSpot_ReturnsFalse() throws Exception {
         givenValidConditions();
+        givenBuildingType(BuildingType.MINE);
         when(cell.isMineSpot()).thenReturn(false);
 
         boolean valid = command.isValid();
 
         assertThat(valid).isFalse();
+    }
+
+    @Test
+    public void isValid_GivenTowerAndCellOnMineSpot_ReturnsFalse() throws Exception {
+        givenValidConditions();
+        givenBuildingType(BuildingType.TOWER);
+        when(cell.isMineSpot()).thenReturn(true);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isFalse();
+    }
+
+    @Test
+    public void isValid_GivenTowerAndCellNotOnMineSpot_ReturnsTrue() throws Exception {
+        givenValidConditions();
+        givenBuildingType(BuildingType.TOWER);
+        when(cell.isMineSpot()).thenReturn(false);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isTrue();
     }
 
     @Test

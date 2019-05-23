@@ -126,6 +126,41 @@ public class MoveCommand_UT {
     }
 
     @Test
+    public void isValid_GivenCellProtectedByOpponentTowerAndUnitThatCantReachTower_ReturnsFalse() throws Exception {
+        givenValidMove();
+
+        when(cell.isProtectedByOpponentTower()).thenReturn(true);
+        when(playerUnit.canReachTower()).thenReturn(false);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isEqualTo(false);
+    }
+
+    @Test
+    public void isValid_GivenCellProtectedByOpponentTowerAndUnitThatCanReachTower_ReturnsTrue() throws Exception {
+        givenValidMove();
+
+        when(cell.isProtectedByOpponentTower()).thenReturn(true);
+        when(playerUnit.canReachTower()).thenReturn(true);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isEqualTo(true);
+    }
+
+    @Test
+    public void isValid_GivenCellUnprotectedByOpponentTower_ReturnsTrue() throws Exception {
+        givenValidMove();
+
+        when(cell.isProtectedByOpponentTower()).thenReturn(false);
+
+        boolean valid = command.isValid();
+
+        assertThat(valid).isEqualTo(true);
+    }
+
+    @Test
     public void isValid_GivenValidCondition_ReturnsTrue() throws Exception {
         givenValidMove();
 
@@ -141,6 +176,8 @@ public class MoveCommand_UT {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.containsBeatableOpponentFor(playerUnit)).thenReturn(true);
         when(cell.isWall()).thenReturn(false);
+        when(cell.isProtectedByOpponentTower()).thenReturn(false);
+        when(playerUnit.canReachTower()).thenReturn(true);
     }
 
     private void givenCellPosition(int x, int y) {

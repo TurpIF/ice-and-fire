@@ -325,6 +325,69 @@ public class GameCell_UT {
         assertThat(occupied).isTrue();
     }
 
+    @Test
+    public void isProtectedByOpponentTower_GivenGameWithTowerOnAnyNeighborCells_ReturnsTrue() throws Exception {
+        GameCell cellWithTower = mock(GameCell.class);
+        GameCell cellWithoutTower = mock(GameCell.class);
+
+        when(cellWithTower.containsTower()).thenReturn(true);
+        when(cellWithoutTower.containsTower()).thenReturn(false);
+
+        Position anyNeighbor = position.getNeighbors().stream().skip(1).findAny().get();
+        when(gameRepository.getCell(any())).thenAnswer(invocation -> {
+            Position neighborPosition = invocation.getArgument(0);
+            if (neighborPosition.equals(anyNeighbor)) {
+                return cellWithTower;
+            }
+            return cellWithoutTower;
+        });
+
+        boolean isProtected = cell.isProtectedByOpponentTower();
+
+        assertThat(isProtected).isTrue();
+    }
+
+    @Test
+    public void isProtectedByOpponentTower_GivenGameWithNoTowerOnAllNeighborCells_ReturnsFalse() throws Exception {
+        GameCell cellWithoutTower = mock(GameCell.class);
+        when(cellWithoutTower.containsTower()).thenReturn(false);
+
+        when(gameRepository.getCell(any())).thenReturn(cellWithoutTower);
+
+        boolean isProtected = cell.isProtectedByOpponentTower();
+
+        assertThat(isProtected).isFalse();
+    }
+
+    @Test
+    public void containsTower_GivenGameWithoutTower_ReturnsFalse() throws Exception {
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
+
+        boolean containsTower = cell.containsTower();
+
+        assertThat(containsTower).isFalse();
+    }
+
+    @Test
+    public void containsTower_GivenGameWithAnotherBuilding_ReturnsFalse() throws Exception {
+        when(opponentBuilding.getType()).thenReturn(BuildingType.MINE);
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+
+        boolean containsTower = cell.containsTower();
+
+        assertThat(containsTower).isFalse();
+    }
+
+    @Test
+    public void containsTower_GivenGameWithTower_ReturnsTrue() throws Exception {
+        when(opponentBuilding.getType()).thenReturn(BuildingType.TOWER);
+        when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
+
+        boolean containsTower = cell.containsTower();
+
+        assertThat(containsTower).isTrue();
+    }
+
     private void givenFreePosition() {
         when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
         when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());

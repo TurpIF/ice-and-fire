@@ -17,6 +17,9 @@ public class TrainedPlayerBuilding {
     }
 
     public int getCost() {
+        if (buildingType == BuildingType.TOWER) {
+            return 15;
+        }
         return 20 + 4 * gameRepository.getPlayerMineCount();
     }
 }

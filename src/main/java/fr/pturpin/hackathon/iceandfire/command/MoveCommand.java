@@ -27,7 +27,12 @@ public class MoveCommand implements GameCommand {
                 && !gameCell.isWall()
                 && gameCell.getPosition().distanceTo(playerUnit.getPosition()) == 1
                 && !gameCell.containsAlly()
-                && gameCell.containsBeatableOpponentFor(playerUnit);
+                && gameCell.containsBeatableOpponentFor(playerUnit)
+                && isNotProtectedByTower();
+    }
+
+    private boolean isNotProtectedByTower() {
+        return !gameCell.isProtectedByOpponentTower() || playerUnit.canReachTower();
     }
 
     @Override
