@@ -17,6 +17,7 @@ public class DistanceFromOpponentCastle extends AbstractDistanceFrom {
     }
 
     private Position findOpponentQg() {
+        // FIXME repository should provide such method
         Position topLeftPosition = new Position(0, 0);
         boolean isAtTopLeft = game.getOpponentBuildingAt(topLeftPosition)
                 .filter(building -> building.getType() == BuildingType.QG)

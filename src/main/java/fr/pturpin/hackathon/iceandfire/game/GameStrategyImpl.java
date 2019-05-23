@@ -37,6 +37,10 @@ public class GameStrategyImpl implements GameStrategy {
 
     private void addCommand(GameCommand command) {
         if (command.isValid()) {
+            // TODO sequentially simulates command so further ones are accurate
+            //  If done, then commands should be ordered to maximize a winning criteria.
+            //  Training commands' generation should be be bulked.
+
             commands.add(command);
         }
     }
@@ -50,6 +54,7 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private void addMoveCommands() {
+        // FIXME repository should provide a getPlayerUnits method
         getAllPositions().map(game::getPlayerUnitAt)
                 .flatMap(this::stream)
                 .forEach(this::addMoveCommand);
@@ -85,7 +90,10 @@ public class GameStrategyImpl implements GameStrategy {
                 if (optOpponentUnit.isPresent()) {
                     OpponentUnit opponentUnit = optOpponentUnit.get();
                     if (!playerUnit.canBeat(opponentUnit)) {
-                        boolean opponentBeatMe = new TrainedPlayerUnit(opponentUnit.getLevel()).canBeat(new OpponentUnit(playerUnit.getLevel()));
+                        // FIXME add a proper canBeat method in opponent unit class
+                        boolean opponentBeatMe = new TrainedPlayerUnit(opponentUnit.getLevel())
+                                .canBeat(new OpponentUnit(playerUnit.getLevel()));
+
                         if (!opponentBeatMe) {
                             return false;
                         }
@@ -131,6 +139,7 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private Stream<Position> getAllPositions() {
+        // FIXME repository should provide a method getAllCells
         return IntStream.range(0, 12).boxed().flatMap(x ->
                 IntStream.range(0, 12).mapToObj(y -> new Position(x, y)));
     }

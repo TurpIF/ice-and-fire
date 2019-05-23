@@ -11,6 +11,7 @@ public abstract class AbstractDistanceFrom {
 
     protected final Game game;
 
+    // FIXME this class should not be aware of the grid size
     private final int[] distances = new int[12 * 12];
     private final Queue<Position> toVisit = new ArrayDeque<>(12 * 12);
     private final Set<Position> visited = new HashSet<>(12 * 12);
@@ -81,6 +82,7 @@ public abstract class AbstractDistanceFrom {
         return distances[index];
     }
 
+    // FIXME this class should not be aware of the grid topology
     private int toIndex(Position position) {
         return position.getY() * 12 + position.getX();
     }
