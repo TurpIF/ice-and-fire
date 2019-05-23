@@ -2,6 +2,7 @@ package fr.pturpin.hackathon.iceandfire.game;
 
 import fr.pturpin.hackathon.iceandfire.reader.GameInputScanner;
 import fr.pturpin.hackathon.iceandfire.reader.GameReader;
+import fr.pturpin.hackathon.iceandfire.strategy.GameStrategy;
 import fr.pturpin.hackathon.iceandfire.writer.GameWriter;
 
 import java.io.PrintStream;

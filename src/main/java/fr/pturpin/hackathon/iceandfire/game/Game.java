@@ -3,6 +3,8 @@ package fr.pturpin.hackathon.iceandfire.game;
 import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
+import fr.pturpin.hackathon.iceandfire.strategy.GameStrategy;
+import fr.pturpin.hackathon.iceandfire.strategy.GameStrategyImpl;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
 import java.util.*;
