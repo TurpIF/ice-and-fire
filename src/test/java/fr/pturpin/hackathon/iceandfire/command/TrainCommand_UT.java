@@ -60,6 +60,13 @@ public class TrainCommand_UT {
     }
 
     @Test
+    public void getTrainUnit_GivenUnit_ReturnsIt() throws Exception {
+        TrainedUnit commandTrainedUnit = command.getTrainedUnit();
+
+        assertThat(commandTrainedUnit).isEqualTo(trainedUnit);
+    }
+
+    @Test
     public void isValid_GivenValidTrain_ReturnsTrue() throws Exception {
         givenValidTrain();
 

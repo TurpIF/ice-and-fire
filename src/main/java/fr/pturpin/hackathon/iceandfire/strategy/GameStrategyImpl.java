@@ -32,7 +32,9 @@ public class GameStrategyImpl implements GameStrategy {
 
         commands.clear();
         addMoveCommands();
-        addTrainCommands();
+        addTrainCommands(1);
+        addTrainCommands(2);
+        addTrainCommands(3);
         return commands;
     }
 
@@ -83,7 +85,7 @@ public class GameStrategyImpl implements GameStrategy {
         GameCell cell = command.getCell();
         PlayerUnit playerUnit = command.getPlayerUnit();
 
-        // If I want to move but I'm next to an opponent that can't beat me and that I can't beat, then stay.
+        // If I'm next to an opponent that can't beat me and that I can't beat, then stay.
         {
             Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();
             for (Position neighbor : neighbors) {
@@ -98,22 +100,11 @@ public class GameStrategyImpl implements GameStrategy {
             }
         }
 
-        // FIXME remove this
-        // If I want to move into my territory but an opponent is next to me, I guard the position.
-        if (cell.isInMyTerritory()) {
-            Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();
-            for (Position neighbor : neighbors) {
-                if (game.getOpponentUnitAt(neighbor).isPresent()) {
-                    return false;
-                }
-            }
-        }
-
         return true;
     }
 
-    private void addTrainCommands() {
-        TrainedUnit trainedUnit = new TrainedUnit(1);
+    private void addTrainCommands(int level) {
+        TrainedUnit trainedUnit = new TrainedUnit(level);
 
         List<TrainCommand> candidates = getAllPositions()
                 .map(game::getCell)
@@ -128,11 +119,17 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private boolean isTrainingUseful(TrainCommand command) {
-        // If the new unit will be next to the front line, then yes, else noe
-        GameCell cell = command.getCell();
+        List<TrainingUsefulnessCriteria> trainingUsefulnessCriteria = Arrays.asList(
+                new NextToFrontLineTrainingCriteria(distanceFromFrontLine),
+                new NoSuicideTrainingCriteria(game));
 
-        int distance = distanceFromFrontLine.getDistanceOf(cell.getPosition());
-        return distance <= 1;
+        for (TrainingUsefulnessCriteria criteria : trainingUsefulnessCriteria) {
+            if (criteria.isUseless(command)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private Stream<Position> getAllPositions() {
@@ -154,21 +151,45 @@ public class GameStrategyImpl implements GameStrategy {
 
     private class MoveCommandComparator implements Comparator<MoveCommand> {
 
-        private final Comparator<GameCell> comparator = new CellNearFrontLineComparator();
+        private final Comparator<MoveCommand> comparator;
+
+        private MoveCommandComparator() {
+            comparator = Comparator.comparingInt(this::getLevelOfBeatableOpponent)
+                    .thenComparing(MoveCommand::getCell, new CellNearFrontLineComparator());
+        }
+
+        private int getLevelOfBeatableOpponent(MoveCommand command) {
+            return game.getOpponentUnitAt(command.getCell().getPosition())
+                    .filter(command.getPlayerUnit()::canBeat)
+                    .map(OpponentUnit::getLevel)
+                    .orElse(0);
+        }
 
         @Override
         public int compare(MoveCommand o1, MoveCommand o2) {
-            return comparator.compare(o1.getCell(), o2.getCell());
+            return comparator.compare(o1, o2);
         }
     }
 
     private class TrainCommandComparator implements Comparator<TrainCommand> {
 
-        private final Comparator<GameCell> comparator = new CellNearFrontLineComparator();
+        private Comparator<TrainCommand> comparator;
+
+        private TrainCommandComparator() {
+            comparator = Comparator.comparingInt(this::getLevelOfBeatableOpponent)
+                    .thenComparing(TrainCommand::getCell, new CellNearFrontLineComparator());
+        }
+
+        private int getLevelOfBeatableOpponent(TrainCommand command) {
+            return game.getOpponentUnitAt(command.getCell().getPosition())
+                    .filter(command.getTrainedUnit()::canBeat)
+                    .map(OpponentUnit::getLevel)
+                    .orElse(0);
+        }
 
         @Override
         public int compare(TrainCommand o1, TrainCommand o2) {
-            return comparator.compare(o1.getCell(), o2.getCell());
+            return comparator.compare(o1, o2);
         }
     }
 

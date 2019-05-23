@@ -20,6 +20,10 @@ public class TrainCommand implements GameCommand {
         return gameCell;
     }
 
+    public TrainedUnit getTrainedUnit() {
+        return trainedUnit;
+    }
+
     @Override
     public boolean isValid() {
         boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedUnit.getTrainingCost();

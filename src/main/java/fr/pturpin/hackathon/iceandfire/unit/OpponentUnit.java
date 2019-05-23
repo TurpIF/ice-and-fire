@@ -23,4 +23,8 @@ public class OpponentUnit {
     public boolean canBeat(PlayerUnit playerUnit) {
         return trainedUnit.canBeat(playerUnit);
     }
+
+    public boolean canBeat(TrainedUnit otherUnit) {
+        return trainedUnit.canBeat(otherUnit);
+    }
 }
