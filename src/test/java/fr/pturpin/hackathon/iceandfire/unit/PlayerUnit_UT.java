@@ -92,6 +92,13 @@ public class PlayerUnit_UT {
     }
 
     @Test
+    public void asTrainedUnit_GivenOne_ReturnsIt() throws Exception {
+        TrainedUnit unitTrainedUnit = unit.asTrainedUnit();
+
+        assertThat(unitTrainedUnit).isEqualTo(trainedUnit);
+    }
+
+    @Test
     public void getLevel_GivenTrainedPlayerUnit_ReturnsItsLevel() throws Exception {
         when(trainedUnit.getLevel()).thenReturn(1);
 

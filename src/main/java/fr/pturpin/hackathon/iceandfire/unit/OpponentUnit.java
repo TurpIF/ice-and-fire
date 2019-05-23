@@ -2,14 +2,25 @@ package fr.pturpin.hackathon.iceandfire.unit;
 
 public class OpponentUnit {
 
-    private final int level;
+    private final TrainedUnit trainedUnit;
 
     public OpponentUnit(int level) {
-        this.level = level;
+        this.trainedUnit = new TrainedUnit(level);
+    }
+
+    public OpponentUnit(TrainedUnit trainedUnit) {
+        this.trainedUnit = trainedUnit;
     }
 
     public int getLevel() {
-        return level;
+        return trainedUnit.getLevel();
     }
 
+    TrainedUnit asTrainedUnit() {
+        return trainedUnit;
+    }
+
+    public boolean canBeat(PlayerUnit playerUnit) {
+        return trainedUnit.canBeat(playerUnit);
+    }
 }

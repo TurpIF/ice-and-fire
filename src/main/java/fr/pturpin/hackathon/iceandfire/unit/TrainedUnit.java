@@ -12,12 +12,20 @@ public class TrainedUnit {
         return level;
     }
 
-    public boolean canBeat(OpponentUnit opponentUnit) {
-        return level > opponentUnit.getLevel() || level == 3;
-    }
-
     public boolean canBeat(OpponentBuilding opponentBuilding) {
         return true;
+    }
+
+    public boolean canBeat(OpponentUnit opponentUnit) {
+        return canBeat(opponentUnit.asTrainedUnit());
+    }
+
+    public boolean canBeat(PlayerUnit playerUnit) {
+        return canBeat(playerUnit.asTrainedUnit());
+    }
+
+    boolean canBeat(TrainedUnit otherUnit) {
+        return level > otherUnit.getLevel() || level == 3;
     }
 
     public int getTrainingCost() {

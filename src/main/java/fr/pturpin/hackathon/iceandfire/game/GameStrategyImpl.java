@@ -89,19 +89,15 @@ public class GameStrategyImpl implements GameStrategy {
                 Optional<OpponentUnit> optOpponentUnit = game.getOpponentUnitAt(neighbor);
                 if (optOpponentUnit.isPresent()) {
                     OpponentUnit opponentUnit = optOpponentUnit.get();
-                    if (!playerUnit.canBeat(opponentUnit)) {
-                        // FIXME add a proper canBeat method in opponent unit class
-                        boolean opponentBeatMe = new TrainedUnit(opponentUnit.getLevel())
-                                .canBeat(new OpponentUnit(playerUnit.getLevel()));
-
-                        if (!opponentBeatMe) {
-                            return false;
-                        }
+                    boolean isTie = !playerUnit.canBeat(opponentUnit) && !opponentUnit.canBeat(playerUnit);
+                    if (isTie) {
+                        return false;
                     }
                 }
             }
         }
 
+        // FIXME remove this
         // If I want to move into my territory but an opponent is next to me, I guard the position.
         if (cell.isInMyTerritory()) {
             Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();

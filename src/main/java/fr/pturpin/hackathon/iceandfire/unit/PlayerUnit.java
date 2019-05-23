@@ -37,4 +37,8 @@ public class PlayerUnit {
     public boolean canBeat(OpponentBuilding opponentBuilding) {
         return trainedUnit.canBeat(opponentBuilding);
     }
+
+    TrainedUnit asTrainedUnit() {
+        return trainedUnit;
+    }
 }
