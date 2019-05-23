@@ -58,7 +58,7 @@ public class Game implements GameRepository {
 
     @Override
     public CellType getCellType(Position position) {
-        int index = position.getY() * 12 + position.getX();
+        int index = toIndex(position);
         return grid[index];
     }
 
@@ -77,6 +77,40 @@ public class Game implements GameRepository {
         return (int) playerBuildings.values().stream()
                 .filter(building -> building.getType() == BuildingType.MINE)
                 .count();
+    }
+
+    @Override
+    public void moveUnit(PlayerUnit playerUnit, GameCell newCell) {
+        Position oldPosition = playerUnit.getPosition();
+        Position newPosition = newCell.getPosition();
+
+        propagateActiveTerritory(newPosition);
+
+        playerUnits.remove(oldPosition);
+        playerUnits.put(newPosition, playerUnit);
+
+        opponentBuildings.remove(newPosition);
+        opponentUnits.remove(newPosition);
+    }
+
+    private void propagateActiveTerritory(Position origin) {
+        Queue<Position> toActivate = new ArrayDeque<>();
+        toActivate.add(origin);
+
+        while (!toActivate.isEmpty()) {
+            Position current = toActivate.remove();
+            grid[toIndex(current)] = CellType.ACTIVE_MINE;
+
+            for (Position neighbor : current.getNeighbors()) {
+                if (grid[toIndex(neighbor)] == CellType.INACTIVE_MINE) {
+                    toActivate.add(neighbor);
+                }
+            }
+        }
+    }
+
+    private int toIndex(Position position) {
+        return position.getY() * 12 + position.getX();
     }
 
     private class OnNewTurn implements GameNewTurn {
@@ -134,7 +168,7 @@ public class Game implements GameRepository {
         @Override
         public void addUnit(Owner owner, int unitId, int level, Position position) {
             if (owner == Owner.ME) {
-                PlayerUnit playerUnit = new PlayerUnit(unitId, position, new TrainedUnit(level));
+                PlayerUnit playerUnit = new PlayerUnit(unitId, getCell(position), new TrainedUnit(level));
                 Game.this.playerUnits.put(position, playerUnit);
             } else if (owner == Owner.OTHER) {
                 OpponentUnit opponentUnit = new OpponentUnit(level);

@@ -43,7 +43,7 @@ public class GameStrategyImpl implements GameStrategy {
             // TODO sequentially simulates command so further ones are accurate
             //  If done, then commands should be ordered to maximize a winning criteria.
             //  Training commands' generation should be be bulked.
-
+            command.execute();
             commands.add(command);
         }
     }

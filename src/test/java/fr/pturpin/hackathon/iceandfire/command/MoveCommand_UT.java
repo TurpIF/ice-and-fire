@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
@@ -178,6 +179,13 @@ public class MoveCommand_UT {
         when(cell.isWall()).thenReturn(false);
         when(cell.isProtectedByOpponentTower()).thenReturn(false);
         when(playerUnit.canReachTower()).thenReturn(true);
+    }
+
+    @Test
+    public void execute_GivenPlayer_MovesThePlayerOnTheCell() {
+        command.execute();
+
+        verify(playerUnit).moveOn(cell);
     }
 
     private void givenCellPosition(int x, int y) {

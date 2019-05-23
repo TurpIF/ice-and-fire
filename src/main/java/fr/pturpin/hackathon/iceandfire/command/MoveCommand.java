@@ -23,7 +23,7 @@ public class MoveCommand implements GameCommand {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException();
+        playerUnit.moveOn(gameCell);
     }
 
     @Override

@@ -12,8 +12,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
 public class GameCell_UT {
@@ -386,6 +385,20 @@ public class GameCell_UT {
         boolean containsTower = cell.containsTower();
 
         assertThat(containsTower).isTrue();
+    }
+
+    @Test
+    public void setEnteringUnit_GivenGame_NotifyGameForNewPosition() throws Exception {
+        cell.setEnteringUnit(playerUnit);
+
+        verify(gameRepository).moveUnit(playerUnit, cell);
+    }
+
+    @Test
+    public void removeLeavingUnit_DoesNothing() throws Exception {
+        cell.removeLeavingUnit(playerUnit);
+
+        verifyZeroInteractions(gameRepository);
     }
 
     private void givenFreePosition() {

@@ -29,4 +29,6 @@ public interface GameRepository {
     boolean isMineSpot(Position position);
 
     int getPlayerMineCount();
+
+    void moveUnit(PlayerUnit playerUnit, GameCell newCell);
 }

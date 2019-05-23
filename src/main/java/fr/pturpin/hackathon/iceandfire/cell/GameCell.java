@@ -86,6 +86,13 @@ public class GameCell {
                 .isPresent();
     }
 
+    public void setEnteringUnit(PlayerUnit playerUnit) {
+        gameRepository.moveUnit(playerUnit, this);
+    }
+
+    public void removeLeavingUnit(PlayerUnit playerUnit) {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

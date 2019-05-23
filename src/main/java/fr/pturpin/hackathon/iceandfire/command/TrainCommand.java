@@ -26,7 +26,7 @@ public class TrainCommand implements GameCommand {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException();
+        // TODO
     }
 
     @Override

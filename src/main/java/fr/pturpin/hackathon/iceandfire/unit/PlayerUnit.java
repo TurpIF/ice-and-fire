@@ -1,21 +1,24 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 
 public class PlayerUnit {
 
     private final int id;
-    private final Position position;
     private final TrainedUnit trainedUnit;
+    private GameCell gameCell;
+    private boolean canMove;
 
-    public PlayerUnit(int id, Position position, TrainedUnit trainedUnit) {
+    public PlayerUnit(int id, GameCell gameCell, TrainedUnit trainedUnit) {
         this.id = id;
-        this.position = position;
+        this.gameCell = gameCell;
         this.trainedUnit = trainedUnit;
+        this.canMove = true;
     }
 
     public boolean canMove() {
-        return true;
+        return canMove;
     }
 
     public int getId() {
@@ -23,7 +26,7 @@ public class PlayerUnit {
     }
 
     public Position getPosition() {
-        return position;
+        return gameCell.getPosition();
     }
 
     public int getLevel() {
@@ -44,5 +47,12 @@ public class PlayerUnit {
 
     TrainedUnit asTrainedUnit() {
         return trainedUnit;
+    }
+
+    public void moveOn(GameCell newCell) {
+        gameCell.removeLeavingUnit(this);
+        newCell.setEnteringUnit(this);
+        gameCell = newCell;
+        canMove = false;
     }
 }

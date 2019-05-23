@@ -1,5 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
 public class PlayerUnit_UT {
@@ -22,11 +23,14 @@ public class PlayerUnit_UT {
     @Mock
     private TrainedUnit trainedUnit;
 
+    @Mock
+    private GameCell cell;
+
     private PlayerUnit unit;
 
     @Before
     public void setUp() throws Exception {
-        unit = new PlayerUnit(1, new Position(0, 0), trainedUnit);
+        unit = new PlayerUnit(1, cell, trainedUnit);
     }
 
     @Test
@@ -116,12 +120,29 @@ public class PlayerUnit_UT {
         assertThat(canReachTower).isTrue();
     }
 
+    @Test
+    public void moveOn_GivenCell_UpdateInternalAndNotifyOldAndNewCells() throws Exception {
+        GameCell newCell = mock(GameCell.class);
+        Position newPosition = new Position(1, 0);
+
+        givenPosition(new Position(0, 0));
+        when(newCell.getPosition()).thenReturn(newPosition);
+
+        unit.moveOn(newCell);
+
+        assertThat(unit.getPosition()).isEqualTo(newPosition);
+        assertThat(unit.canMove()).isFalse();
+
+        verify(newCell).setEnteringUnit(unit);
+        verify(cell).removeLeavingUnit(unit);
+    }
+
     private void givenId(int id) {
-        unit = new PlayerUnit(id, unit.getPosition(), trainedUnit);
+        unit = new PlayerUnit(id, cell, trainedUnit);
     }
 
     private void givenPosition(Position position) {
-        unit = new PlayerUnit(unit.getId(), position, trainedUnit);
+        when(cell.getPosition()).thenReturn(position);
     }
 
 }

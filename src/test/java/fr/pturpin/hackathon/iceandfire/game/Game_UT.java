@@ -33,7 +33,7 @@ public class Game_UT {
 
     @Test
     public void getCellType_GivenGrid_ReturnsCellAtGivenPosition() throws Exception {
-        CellType[] grid = getFullGrid();
+        CellType[] grid = getFullGrid(CellType.NIL);
         grid[6 * 12 + 4] = CellType.INACTIVE_THEIR;
 
         game.onNewTurn().setGrid(grid);
@@ -260,9 +260,115 @@ public class Game_UT {
         assertThat(mineSpot).isTrue();
     }
 
-    private CellType[] getFullGrid() {
+    @Test
+    public void moveUnit_GivenNewEmptyCell_PutUnitAtTheNewPosition() throws Exception {
+        Position oldPosition = new Position(0, 0);
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.ME, 1, 1, oldPosition);
+
+        GameCell oldCell = game.getCell(oldPosition);
+        GameCell newCell = game.getCell(newPosition);
+
+        PlayerUnit playerUnit = game.getPlayerUnitAt(oldPosition).get();
+
+        game.moveUnit(playerUnit, newCell);
+
+        assertMovedUnit(oldCell, newCell, playerUnit);
+    }
+
+    @Test
+    public void moveUnit_GivenNewCellWithBuilding_RemoveBuilding() throws Exception {
+        Position oldPosition = new Position(0, 0);
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.ME, 1, 3, oldPosition);
+        game.onNewTurn().setBuildingCount(1);
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.TOWER, newPosition);
+
+        GameCell oldCell = game.getCell(oldPosition);
+        GameCell newCell = game.getCell(newPosition);
+        PlayerUnit playerUnit = game.getPlayerUnitAt(oldPosition).get();
+
+        game.moveUnit(playerUnit, newCell);
+
+        assertMovedUnit(oldCell, newCell, playerUnit);
+    }
+
+    @Test
+    public void moveUnit_GivenNewCellWithUnit_RemoveUnit() throws Exception {
+        Position oldPosition = new Position(0, 0);
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        game.onNewTurn().setUnitCount(2);
+        game.onNewTurn().addUnit(Owner.ME, 1, 3, oldPosition);
+        game.onNewTurn().addUnit(Owner.OTHER, 2, 2, newPosition);
+
+        GameCell oldCell = game.getCell(oldPosition);
+        GameCell newCell = game.getCell(newPosition);
+        PlayerUnit playerUnit = game.getPlayerUnitAt(oldPosition).get();
+
+        game.moveUnit(playerUnit, newCell);
+
+        assertMovedUnit(oldCell, newCell, playerUnit);
+    }
+
+    @Test
+    public void moveUnit_GivenNewCellConnectingInactiveCell_MakesThemActive() throws Exception {
+        Position oldPosition = new Position(0, 0);
+        Position newPosition = new Position(1, 0);
+
+        CellType[] grid = getFullGrid(CellType.NEUTRAL);
+        grid[toIndex(new Position(2, 0))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(2, 1))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(3, 0))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(3, 1))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(4, 2))] = CellType.INACTIVE_MINE;
+
+        game.onNewTurn().setGrid(grid);
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.ME, 1, 3, oldPosition);
+
+        GameCell newCell = game.getCell(newPosition);
+        PlayerUnit playerUnit = game.getPlayerUnitAt(oldPosition).get();
+
+        game.moveUnit(playerUnit, newCell);
+
+        assertThat(game.getCellType(new Position(2, 0))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(2, 1))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(3, 0))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(3, 1))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(4, 2))).isEqualTo(CellType.INACTIVE_MINE);
+    }
+
+    private int toIndex(Position position) {
+        return position.getY() * 12 + position.getX();
+    }
+
+    private void assertMovedUnit(GameCell oldCell, GameCell newCell, PlayerUnit playerUnit) {
+        Position oldPosition = oldCell.getPosition();
+        Position newPosition = newCell.getPosition();
+
+        assertThat(newCell.containsAlly()).isTrue();
+        assertThat(newCell.isInMyTerritory()).isTrue();
+        assertThat(newCell.isOccupied()).isTrue();
+        assertThat(oldCell.containsAlly()).isFalse();
+        assertThat(oldCell.isOccupied()).isFalse();
+        assertThat(game.getPlayerUnitAt(oldPosition)).isEmpty();
+        assertThat(game.getPlayerUnitAt(newPosition)).hasValue(playerUnit);
+        assertThat(game.getCellType(newPosition)).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getOpponentUnitAt(newPosition)).isEmpty();
+        assertThat(game.getOpponentBuildingAt(newPosition)).isEmpty();
+    }
+
+    private CellType[] getFullGrid(CellType cellType) {
         CellType[] grid = new CellType[12 * 12];
-        Arrays.fill(grid, CellType.NIL);
+        Arrays.fill(grid, cellType);
         return grid;
     }
 
