@@ -2,7 +2,7 @@ package fr.pturpin.hackathon.iceandfire.cell;
 
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
-import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
 import java.util.Objects;
 
@@ -36,16 +36,16 @@ public class GameCell {
         return gameRepository.getOpponentBuildingAt(position).map(playerUnit::canBeat).orElse(true);
     }
 
-    public boolean containsBeatableOpponentFor(TrainedPlayerUnit trainedPlayerUnit) {
-        return containsBeatableOpponentBuildingFor(trainedPlayerUnit) && containsBeatableOpponentUnitFor(trainedPlayerUnit);
+    public boolean containsBeatableOpponentFor(TrainedUnit trainedUnit) {
+        return containsBeatableOpponentBuildingFor(trainedUnit) && containsBeatableOpponentUnitFor(trainedUnit);
     }
 
-    private Boolean containsBeatableOpponentUnitFor(TrainedPlayerUnit trainedPlayerUnit) {
-        return gameRepository.getOpponentUnitAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
+    private Boolean containsBeatableOpponentUnitFor(TrainedUnit trainedUnit) {
+        return gameRepository.getOpponentUnitAt(position).map(trainedUnit::canBeat).orElse(true);
     }
 
-    private Boolean containsBeatableOpponentBuildingFor(TrainedPlayerUnit trainedPlayerUnit) {
-        return gameRepository.getOpponentBuildingAt(position).map(trainedPlayerUnit::canBeat).orElse(true);
+    private Boolean containsBeatableOpponentBuildingFor(TrainedUnit trainedUnit) {
+        return gameRepository.getOpponentBuildingAt(position).map(trainedUnit::canBeat).orElse(true);
     }
 
     public boolean isInMyTerritoryOrInItsNeighborhood() {

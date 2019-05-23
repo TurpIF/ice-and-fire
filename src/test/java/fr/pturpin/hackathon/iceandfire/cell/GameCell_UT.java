@@ -32,7 +32,7 @@ public class GameCell_UT {
     private PlayerBuilding playerBuilding;
 
     @Mock
-    private TrainedPlayerUnit trainedPlayerUnit;
+    private TrainedUnit trainedUnit;
 
     @Mock
     private OpponentUnit opponentUnit;
@@ -131,7 +131,7 @@ public class GameCell_UT {
         when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
         when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
 
-        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
+        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedUnit);
 
         assertThat(containsBeatableOpponentFor).isTrue();
     }
@@ -140,9 +140,9 @@ public class GameCell_UT {
     public void containsBeatableOpponentForTrained_GivenGameWithBeatableOpponentUnit_ReturnsTrue() throws Exception {
         when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
         when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
-        when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(true);
+        when(trainedUnit.canBeat(opponentUnit)).thenReturn(true);
 
-        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
+        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedUnit);
 
         assertThat(containsBeatableOpponentFor).isTrue();
     }
@@ -151,9 +151,9 @@ public class GameCell_UT {
     public void containsBeatableOpponentForTrained_GivenGameWithBeatableOpponentBuilding_ReturnsTrue() throws Exception {
         when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
         when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.empty());
-        when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(true);
+        when(trainedUnit.canBeat(opponentBuilding)).thenReturn(true);
 
-        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
+        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedUnit);
 
         assertThat(containsBeatableOpponentFor).isTrue();
     }
@@ -162,9 +162,9 @@ public class GameCell_UT {
     public void containsBeatableOpponentForTrained_GivenGameWithUnbeatableOpponentUnit_ReturnsFalse() throws Exception {
         when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.empty());
         when(gameRepository.getOpponentUnitAt(position)).thenReturn(Optional.of(opponentUnit));
-        when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(false);
+        when(trainedUnit.canBeat(opponentUnit)).thenReturn(false);
 
-        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
+        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedUnit);
 
         assertThat(containsBeatableOpponentFor).isFalse();
     }
@@ -172,9 +172,9 @@ public class GameCell_UT {
     @Test
     public void containsBeatableOpponentFor_GivenGameWithUnbeatableOpponentBuilding_ReturnsFalse() throws Exception {
         when(gameRepository.getOpponentBuildingAt(position)).thenReturn(Optional.of(opponentBuilding));
-        when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(false);
+        when(trainedUnit.canBeat(opponentBuilding)).thenReturn(false);
 
-        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedPlayerUnit);
+        boolean containsBeatableOpponentFor = cell.containsBeatableOpponentFor(trainedUnit);
 
         assertThat(containsBeatableOpponentFor).isFalse();
     }

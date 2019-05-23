@@ -1,10 +1,10 @@
 package fr.pturpin.hackathon.iceandfire.unit;
 
-public class TrainedPlayerUnit {
+public class TrainedUnit {
 
     private final int level;
 
-    public TrainedPlayerUnit(int level) {
+    public TrainedUnit(int level) {
         this.level = level;
     }
 

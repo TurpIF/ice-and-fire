@@ -7,7 +7,7 @@ import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
-import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,7 +91,7 @@ public class GameStrategyImpl implements GameStrategy {
                     OpponentUnit opponentUnit = optOpponentUnit.get();
                     if (!playerUnit.canBeat(opponentUnit)) {
                         // FIXME add a proper canBeat method in opponent unit class
-                        boolean opponentBeatMe = new TrainedPlayerUnit(opponentUnit.getLevel())
+                        boolean opponentBeatMe = new TrainedUnit(opponentUnit.getLevel())
                                 .canBeat(new OpponentUnit(playerUnit.getLevel()));
 
                         if (!opponentBeatMe) {
@@ -116,12 +116,12 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private void addTrainCommands() {
-        TrainedPlayerUnit trainedPlayerUnit = new TrainedPlayerUnit(1);
+        TrainedUnit trainedUnit = new TrainedUnit(1);
 
         List<TrainCommand> candidates = getAllPositions()
                 .map(game::getCell)
                 .filter(GameCell::isInMyTerritoryOrInItsNeighborhood)
-                .map(cell -> new TrainCommand(trainedPlayerUnit, cell, game))
+                .map(cell -> new TrainCommand(trainedUnit, cell, game))
                 .filter(GameCommand::isValid)
                 .filter(this::isTrainingUseful)
                 .sorted(new TrainCommandComparator().reversed())

@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
-public class TrainedPlayerUnit_UT {
+public class TrainedUnit_UT {
 
     @Mock
     private OpponentUnit opponentUnit;
@@ -18,11 +18,11 @@ public class TrainedPlayerUnit_UT {
     @Mock
     private OpponentBuilding opponentBuilding;
 
-    private TrainedPlayerUnit unit;
+    private TrainedUnit unit;
 
     @Before
     public void setUp() throws Exception {
-        unit = new TrainedPlayerUnit(1);
+        unit = new TrainedUnit(1);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class TrainedPlayerUnit_UT {
     }
 
     private void givenLevel(int level) {
-        unit = new TrainedPlayerUnit(level);
+        unit = new TrainedUnit(level);
     }
 
 }

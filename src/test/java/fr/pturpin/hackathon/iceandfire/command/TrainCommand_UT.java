@@ -3,7 +3,7 @@ package fr.pturpin.hackathon.iceandfire.command;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
-import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,13 +23,13 @@ public class TrainCommand_UT {
     private GameRepository gameRepository;
 
     @Mock
-    private TrainedPlayerUnit trainedPlayerUnit;
+    private TrainedUnit trainedUnit;
 
     private TrainCommand command;
 
     @Before
     public void setUp() throws Exception {
-        command = new TrainCommand(trainedPlayerUnit, cell, gameRepository);
+        command = new TrainCommand(trainedUnit, cell, gameRepository);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TrainCommand_UT {
     public void isValid_GivenCellWithUnbeatableOpponent_ReturnsFalse() throws Exception {
         givenLevel(1);
         givenValidTrain();
-        when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(false);
+        when(cell.containsBeatableOpponentFor(trainedUnit)).thenReturn(false);
 
         boolean valid = command.isValid();
 
@@ -113,7 +113,7 @@ public class TrainCommand_UT {
     public void isValid_GivenNotEnoughGold_ReturnsFalse() throws Exception {
         givenValidTrain();
         when(gameRepository.getPlayerGold()).thenReturn(10);
-        when(trainedPlayerUnit.getTrainingCost()).thenReturn(11);
+        when(trainedUnit.getTrainingCost()).thenReturn(11);
 
         boolean valid = command.isValid();
 
@@ -124,13 +124,13 @@ public class TrainCommand_UT {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);
         when(gameRepository.getPlayerGold()).thenReturn(10);
-        when(trainedPlayerUnit.getTrainingCost()).thenReturn(10);
-        when(cell.containsBeatableOpponentFor(trainedPlayerUnit)).thenReturn(true);
+        when(trainedUnit.getTrainingCost()).thenReturn(10);
+        when(cell.containsBeatableOpponentFor(trainedUnit)).thenReturn(true);
         when(cell.isWall()).thenReturn(false);
     }
 
     private void givenLevel(int level) {
-        when(trainedPlayerUnit.getLevel()).thenReturn(level);
+        when(trainedUnit.getLevel()).thenReturn(level);
     }
 
 }

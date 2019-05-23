@@ -6,12 +6,12 @@ public class PlayerUnit {
 
     private final int id;
     private final Position position;
-    private final TrainedPlayerUnit trainedPlayerUnit;
+    private final TrainedUnit trainedUnit;
 
-    public PlayerUnit(int id, Position position, TrainedPlayerUnit trainedPlayerUnit) {
+    public PlayerUnit(int id, Position position, TrainedUnit trainedUnit) {
         this.id = id;
         this.position = position;
-        this.trainedPlayerUnit = trainedPlayerUnit;
+        this.trainedUnit = trainedUnit;
     }
 
     public boolean canMove() {
@@ -27,14 +27,14 @@ public class PlayerUnit {
     }
 
     public int getLevel() {
-        return trainedPlayerUnit.getLevel();
+        return trainedUnit.getLevel();
     }
 
     public boolean canBeat(OpponentUnit opponentUnit) {
-        return trainedPlayerUnit.canBeat(opponentUnit);
+        return trainedUnit.canBeat(opponentUnit);
     }
 
     public boolean canBeat(OpponentBuilding opponentBuilding) {
-        return trainedPlayerUnit.canBeat(opponentBuilding);
+        return trainedUnit.canBeat(opponentBuilding);
     }
 }

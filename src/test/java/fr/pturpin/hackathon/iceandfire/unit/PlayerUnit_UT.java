@@ -20,13 +20,13 @@ public class PlayerUnit_UT {
     private OpponentUnit opponentUnit;
 
     @Mock
-    private TrainedPlayerUnit trainedPlayerUnit;
+    private TrainedUnit trainedUnit;
 
     private PlayerUnit unit;
 
     @Before
     public void setUp() throws Exception {
-        unit = new PlayerUnit(1, new Position(0, 0), trainedPlayerUnit);
+        unit = new PlayerUnit(1, new Position(0, 0), trainedUnit);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class PlayerUnit_UT {
 
     @Test
     public void canBeat_GivenOpponentUnit_AskTheTrainedUnit() throws Exception {
-        when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(true);
+        when(trainedUnit.canBeat(opponentUnit)).thenReturn(true);
 
         boolean canBeat = unit.canBeat(opponentUnit);
 
@@ -66,7 +66,7 @@ public class PlayerUnit_UT {
 
     @Test
     public void canBeat_GivenOpponentUnit_AskTheTrainedUnit2() throws Exception {
-        when(trainedPlayerUnit.canBeat(opponentUnit)).thenReturn(false);
+        when(trainedUnit.canBeat(opponentUnit)).thenReturn(false);
 
         boolean canBeat = unit.canBeat(opponentUnit);
 
@@ -75,7 +75,7 @@ public class PlayerUnit_UT {
 
     @Test
     public void canBeat_GivenOpponentBuilding_AskTheTrainedUnit() throws Exception {
-        when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(true);
+        when(trainedUnit.canBeat(opponentBuilding)).thenReturn(true);
 
         boolean canBeat = unit.canBeat(opponentBuilding);
 
@@ -84,7 +84,7 @@ public class PlayerUnit_UT {
 
     @Test
     public void canBeat_GivenOpponentBuilding_AskTheTrainedUnit2() throws Exception {
-        when(trainedPlayerUnit.canBeat(opponentBuilding)).thenReturn(false);
+        when(trainedUnit.canBeat(opponentBuilding)).thenReturn(false);
 
         boolean canBeat = unit.canBeat(opponentBuilding);
 
@@ -93,7 +93,7 @@ public class PlayerUnit_UT {
 
     @Test
     public void getLevel_GivenTrainedPlayerUnit_ReturnsItsLevel() throws Exception {
-        when(trainedPlayerUnit.getLevel()).thenReturn(1);
+        when(trainedUnit.getLevel()).thenReturn(1);
 
         int level = unit.getLevel();
 
@@ -101,11 +101,11 @@ public class PlayerUnit_UT {
     }
 
     private void givenId(int id) {
-        unit = new PlayerUnit(id, unit.getPosition(), trainedPlayerUnit);
+        unit = new PlayerUnit(id, unit.getPosition(), trainedUnit);
     }
 
     private void givenPosition(Position position) {
-        unit = new PlayerUnit(unit.getId(), position, trainedPlayerUnit);
+        unit = new PlayerUnit(unit.getId(), position, trainedUnit);
     }
 
 }

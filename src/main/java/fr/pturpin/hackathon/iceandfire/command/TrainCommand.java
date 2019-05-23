@@ -2,16 +2,16 @@ package fr.pturpin.hackathon.iceandfire.command;
 
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
-import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
 public class TrainCommand implements GameCommand {
 
-    private final TrainedPlayerUnit trainedPlayerUnit;
+    private final TrainedUnit trainedUnit;
     private final GameCell gameCell;
     private final GameRepository gameRepository;
 
-    public TrainCommand(TrainedPlayerUnit trainedPlayerUnit, GameCell gameCell, GameRepository gameRepository) {
-        this.trainedPlayerUnit = trainedPlayerUnit;
+    public TrainCommand(TrainedUnit trainedUnit, GameCell gameCell, GameRepository gameRepository) {
+        this.trainedUnit = trainedUnit;
         this.gameCell = gameCell;
         this.gameRepository = gameRepository;
     }
@@ -22,16 +22,16 @@ public class TrainCommand implements GameCommand {
 
     @Override
     public boolean isValid() {
-        boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedPlayerUnit.getTrainingCost();
+        boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedUnit.getTrainingCost();
         return hasEnoughGold
                 && !gameCell.isWall()
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
-                && gameCell.containsBeatableOpponentFor(trainedPlayerUnit);
+                && gameCell.containsBeatableOpponentFor(trainedUnit);
     }
 
     @Override
     public String getFormattedCommand() {
-        return String.format("TRAIN %d %d %d", trainedPlayerUnit.getLevel(), gameCell.getPosition().getX(), gameCell.getPosition().getY());
+        return String.format("TRAIN %d %d %d", trainedUnit.getLevel(), gameCell.getPosition().getX(), gameCell.getPosition().getY());
     }
 }

@@ -132,7 +132,7 @@ public class Game implements GameRepository {
         @Override
         public void addUnit(Owner owner, int unitId, int level, Position position) {
             if (owner == Owner.ME) {
-                PlayerUnit playerUnit = new PlayerUnit(unitId, position, new TrainedPlayerUnit(level));
+                PlayerUnit playerUnit = new PlayerUnit(unitId, position, new TrainedUnit(level));
                 Game.this.playerUnits.put(position, playerUnit);
             } else if (owner == Owner.OTHER) {
                 OpponentUnit opponentUnit = new OpponentUnit(level);
