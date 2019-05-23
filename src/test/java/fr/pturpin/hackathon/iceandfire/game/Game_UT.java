@@ -280,7 +280,7 @@ public class Game_UT {
     }
 
     @Test
-    public void moveUnit_GivenNewCellWithBuilding_RemoveBuilding() throws Exception {
+    public void moveUnit_GivenNewCellWithBuilding_RemovesBuilding() throws Exception {
         Position oldPosition = new Position(0, 0);
         Position newPosition = new Position(1, 0);
 
@@ -300,7 +300,7 @@ public class Game_UT {
     }
 
     @Test
-    public void moveUnit_GivenNewCellWithUnit_RemoveUnit() throws Exception {
+    public void moveUnit_GivenNewCellWithUnit_RemovesUnit() throws Exception {
         Position oldPosition = new Position(0, 0);
         Position newPosition = new Position(1, 0);
 
@@ -361,6 +361,93 @@ public class Game_UT {
         assertThat(oldCell.isOccupied()).isFalse();
         assertThat(game.getPlayerUnitAt(oldPosition)).isEmpty();
         assertThat(game.getPlayerUnitAt(newPosition)).hasValue(playerUnit);
+        assertThat(game.getCellType(newPosition)).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getOpponentUnitAt(newPosition)).isEmpty();
+        assertThat(game.getOpponentBuildingAt(newPosition)).isEmpty();
+    }
+
+    @Test
+    public void invokeNewUnit_GivenNewFreeCell_InvokeNewUnitAtGivenPosition() throws Exception {
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+
+        GameCell newCell = game.getCell(newPosition);
+        TrainedUnit trainedUnit = new TrainedUnit(3);
+
+        game.invokeNewUnit(trainedUnit, newCell);
+
+        assertInvokedUnit(newCell, trainedUnit);
+    }
+
+    @Test
+    public void invokeNewUnit_GivenNewCellWithUnit_RemovesUnit() throws Exception {
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.OTHER, 1, 1, newPosition);
+
+        GameCell newCell = game.getCell(newPosition);
+        TrainedUnit trainedUnit = new TrainedUnit(3);
+
+        game.invokeNewUnit(trainedUnit, newCell);
+
+        assertInvokedUnit(newCell, trainedUnit);
+    }
+
+    @Test
+    public void invokeNewUnit_GivenNewCellWithBuilding_RemovesBuilding() throws Exception {
+        Position newPosition = new Position(1, 0);
+
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.OTHER, 1, 1, newPosition);
+
+        GameCell newCell = game.getCell(newPosition);
+        TrainedUnit trainedUnit = new TrainedUnit(3);
+
+        game.invokeNewUnit(trainedUnit, newCell);
+
+        assertInvokedUnit(newCell, trainedUnit);
+    }
+
+    @Test
+    public void invokeNewUnit_GivenNewCellConnectingInactiveCell_MakesThemActive() throws Exception {
+        Position newPosition = new Position(1, 0);
+
+        CellType[] grid = getFullGrid(CellType.NEUTRAL);
+        grid[toIndex(new Position(2, 0))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(2, 1))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(3, 0))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(3, 1))] = CellType.INACTIVE_MINE;
+        grid[toIndex(new Position(4, 2))] = CellType.INACTIVE_MINE;
+
+        game.onNewTurn().setGrid(grid);
+
+        GameCell newCell = game.getCell(newPosition);
+        TrainedUnit trainedUnit = new TrainedUnit(3);
+
+        game.invokeNewUnit(trainedUnit, newCell);
+
+        assertThat(game.getCellType(new Position(2, 0))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(2, 1))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(3, 0))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(3, 1))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(4, 2))).isEqualTo(CellType.INACTIVE_MINE);
+    }
+
+    private void assertInvokedUnit(GameCell newCell, TrainedUnit trainedUnit) {
+        Position newPosition = newCell.getPosition();
+
+        assertThat(newCell.containsAlly()).isTrue();
+        assertThat(newCell.isInMyTerritory()).isTrue();
+        assertThat(newCell.isOccupied()).isTrue();
+        assertThat(game.getPlayerUnitAt(newPosition)).hasValueSatisfying(playerUnit-> {
+            assertThat(playerUnit.getPosition()).isEqualTo(newPosition);
+            assertThat(playerUnit.getLevel()).isEqualTo(trainedUnit.getLevel());
+            assertThat(playerUnit.canMove()).isFalse();
+        });
         assertThat(game.getCellType(newPosition)).isEqualTo(CellType.ACTIVE_MINE);
         assertThat(game.getOpponentUnitAt(newPosition)).isEmpty();
         assertThat(game.getOpponentBuildingAt(newPosition)).isEmpty();

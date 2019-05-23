@@ -11,10 +11,14 @@ public class PlayerUnit {
     private boolean canMove;
 
     public PlayerUnit(int id, GameCell gameCell, TrainedUnit trainedUnit) {
+        this(id, gameCell, trainedUnit, true);
+    }
+
+    public PlayerUnit(int id, GameCell gameCell, TrainedUnit trainedUnit, boolean canMove) {
         this.id = id;
         this.gameCell = gameCell;
         this.trainedUnit = trainedUnit;
-        this.canMove = true;
+        this.canMove = canMove;
     }
 
     public boolean canMove() {

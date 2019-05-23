@@ -401,6 +401,13 @@ public class GameCell_UT {
         verifyZeroInteractions(gameRepository);
     }
 
+    @Test
+    public void invokeNewUnit_GivenGame_InvokesIt() throws Exception {
+        cell.invokeNewUnit(trainedUnit);
+
+        verify(gameRepository).invokeNewUnit(trainedUnit, cell);
+    }
+
     private void givenFreePosition() {
         when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());
         when(gameRepository.getPlayerBuildingAt(position)).thenReturn(Optional.empty());

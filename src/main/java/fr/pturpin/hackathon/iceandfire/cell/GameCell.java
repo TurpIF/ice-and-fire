@@ -93,6 +93,10 @@ public class GameCell {
     public void removeLeavingUnit(PlayerUnit playerUnit) {
     }
 
+    public void invokeNewUnit(TrainedUnit trainedUnit) {
+        gameRepository.invokeNewUnit(trainedUnit, this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

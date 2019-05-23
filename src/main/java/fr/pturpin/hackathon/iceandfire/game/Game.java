@@ -93,6 +93,12 @@ public class Game implements GameRepository {
         opponentUnits.remove(newPosition);
     }
 
+    @Override
+    public void invokeNewUnit(TrainedUnit trainedUnit, GameCell cell) {
+        PlayerUnit playerUnit = new PlayerUnit(-1, cell, trainedUnit, false);
+        moveUnit(playerUnit, cell);
+    }
+
     private void propagateActiveTerritory(Position origin) {
         Queue<Position> toActivate = new ArrayDeque<>();
         toActivate.add(origin);

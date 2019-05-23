@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
@@ -168,6 +169,13 @@ public class TrainCommand_UT {
         when(cell.isWall()).thenReturn(false);
         when(cell.isProtectedByOpponentTower()).thenReturn(false);
         when(trainedUnit.canReachTower()).thenReturn(true);
+    }
+
+    @Test
+    public void execute_GivenCell_InvokesNewUnit() throws Exception {
+        command.execute();
+
+        verify(cell).invokeNewUnit(trainedUnit);
     }
 
     private void givenLevel(int level) {
