@@ -17,6 +17,10 @@ public class MoveCommand implements GameCommand {
         return gameCell;
     }
 
+    public PlayerUnit getPlayerUnit() {
+        return playerUnit;
+    }
+
     @Override
     public boolean isValid() {
         return playerUnit.canMove()

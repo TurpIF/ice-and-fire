@@ -5,6 +5,7 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
+import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerUnit;
 
@@ -17,6 +18,8 @@ public class GameStrategyImpl implements GameStrategy {
 
     private final Game game;
     private List<GameCommand> commands = new ArrayList<>();
+    private DistanceFromFrontLine distanceFromFrontLine;
+    private DistanceFromOpponentCastle distanceFromOpponentCastle;
 
     public GameStrategyImpl(Game game) {
         this.game = game;
@@ -24,10 +27,26 @@ public class GameStrategyImpl implements GameStrategy {
 
     @Override
     public Collection<GameCommand> buildCommands() {
+        computeDistances();
+
         commands.clear();
         addMoveCommands();
         addTrainCommands();
         return commands;
+    }
+
+    private void addCommand(GameCommand command) {
+        if (command.isValid()) {
+            commands.add(command);
+        }
+    }
+
+    private void computeDistances() {
+        distanceFromFrontLine = new DistanceFromFrontLine(game);
+        distanceFromFrontLine.compute();
+
+        distanceFromOpponentCastle = new DistanceFromOpponentCastle(game);
+        distanceFromOpponentCastle.compute();
     }
 
     private void addMoveCommands() {
@@ -44,19 +63,48 @@ public class GameStrategyImpl implements GameStrategy {
             GameCell neighborCell = game.getCell(neighbor);
             MoveCommand command = new MoveCommand(unit, neighborCell);
 
-            if (command.isValid()) {
+            if (command.isValid() && isMoveUseful(command)) {
                 candidates.add(command);
             }
         }
 
-        if (candidates.isEmpty()) {
-            return;
+        candidates.stream()
+                .max(new MoveCommandComparator())
+                .ifPresent(this::addCommand);
+    }
+
+    private boolean isMoveUseful(MoveCommand command) {
+        GameCell cell = command.getCell();
+        PlayerUnit playerUnit = command.getPlayerUnit();
+
+        // If I want to move but I'm next to an opponent that can't beat me and that I can't beat, then stay.
+        {
+            Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();
+            for (Position neighbor : neighbors) {
+                Optional<OpponentUnit> optOpponentUnit = game.getOpponentUnitAt(neighbor);
+                if (optOpponentUnit.isPresent()) {
+                    OpponentUnit opponentUnit = optOpponentUnit.get();
+                    if (!playerUnit.canBeat(opponentUnit)) {
+                        boolean opponentBeatMe = new TrainedPlayerUnit(opponentUnit.getLevel()).canBeat(new OpponentUnit(playerUnit.getLevel()));
+                        if (!opponentBeatMe) {
+                            return false;
+                        }
+                    }
+                }
+            }
         }
 
-        candidates.sort(new MoveCommandComparator().reversed());
-        MoveCommand selected = candidates.get(0);
+        // If I want to move into my territory but an opponent is next to me, I guard the position.
+        if (cell.isInMyTerritory()) {
+            Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();
+            for (Position neighbor : neighbors) {
+                if (game.getOpponentUnitAt(neighbor).isPresent()) {
+                    return false;
+                }
+            }
+        }
 
-        commands.add(selected);
+        return true;
     }
 
     private void addTrainCommands() {
@@ -67,10 +115,19 @@ public class GameStrategyImpl implements GameStrategy {
                 .filter(GameCell::isInMyTerritoryOrInItsNeighborhood)
                 .map(cell -> new TrainCommand(trainedPlayerUnit, cell, game))
                 .filter(GameCommand::isValid)
+                .filter(this::isTrainingUseful)
                 .sorted(new TrainCommandComparator().reversed())
                 .collect(Collectors.toList());
 
-        commands.addAll(candidates);
+        candidates.forEach(this::addCommand);
+    }
+
+    private boolean isTrainingUseful(TrainCommand command) {
+        // If the new unit will be next to the front line, then yes, else noe
+        GameCell cell = command.getCell();
+
+        int distance = distanceFromFrontLine.getDistanceOf(cell.getPosition());
+        return distance <= 1;
     }
 
     private Stream<Position> getAllPositions() {
@@ -90,20 +147,39 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private class MoveCommandComparator implements Comparator<MoveCommand> {
+
+        private final Comparator<GameCell> comparator = new CellNearFrontLineComparator();
+
         @Override
         public int compare(MoveCommand o1, MoveCommand o2) {
-            return Comparator.<GameCell>comparingInt(cell -> cell.isInMyTerritory() ? -1 : 0)
-                    .thenComparing(GameCell::getPosition, new PositionComparator())
-                    .compare(o1.getCell(), o2.getCell());
+            return comparator.compare(o1.getCell(), o2.getCell());
         }
     }
 
     private class TrainCommandComparator implements Comparator<TrainCommand> {
+
+        private final Comparator<GameCell> comparator = new CellNearFrontLineComparator();
+
         @Override
         public int compare(TrainCommand o1, TrainCommand o2) {
-            return Comparator.<GameCell>comparingInt(cell -> cell.isInMyTerritory() ? -1 : 0)
-                    .thenComparing(GameCell::getPosition, new PositionComparator())
-                    .compare(o1.getCell(), o2.getCell());
+            return comparator.compare(o1.getCell(), o2.getCell());
+        }
+    }
+
+    private class CellNearFrontLineComparator implements Comparator<GameCell> {
+
+        private Comparator<GameCell> comparator;
+
+        private CellNearFrontLineComparator() {
+            comparator = Comparator.<GameCell>comparingInt(cell -> cell.isInMyTerritory() ? -1 : 0)
+                    .thenComparingInt(cell -> -distanceFromOpponentCastle.getDistanceOf(cell.getPosition()))
+                    .thenComparingInt(cell -> -distanceFromFrontLine.getDistanceOf(cell.getPosition()))
+                    .thenComparing(GameCell::getPosition, new PositionComparator());
+        }
+
+        @Override
+        public int compare(GameCell o1, GameCell o2) {
+            return comparator.compare(o1, o2);
         }
     }
 }
