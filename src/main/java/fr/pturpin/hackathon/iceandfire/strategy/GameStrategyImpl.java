@@ -6,7 +6,12 @@ import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
-import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
+import fr.pturpin.hackathon.iceandfire.strategy.comparator.CellNearFrontLineComparator;
+import fr.pturpin.hackathon.iceandfire.strategy.comparator.MoveCommandComparator;
+import fr.pturpin.hackathon.iceandfire.strategy.comparator.TrainCommandComparator;
+import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
+import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentCastle;
+import fr.pturpin.hackathon.iceandfire.strategy.guard.*;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
@@ -17,12 +22,43 @@ import java.util.stream.Stream;
 public class GameStrategyImpl implements GameStrategy {
 
     private final GameRepository game;
+    private final DistanceFromFrontLine distanceFromFrontLine;
+    private final DistanceFromOpponentCastle distanceFromOpponentCastle;
+
+    private final MoveGuard moveGuard;
+    private final TrainingGuard trainingGuard;
+
+    private final Comparator<MoveCommand> moveComparator;
+    private final Comparator<TrainCommand> trainComparator;
+
     private List<GameCommand> commands = new ArrayList<>();
-    private DistanceFromFrontLine distanceFromFrontLine;
-    private DistanceFromOpponentCastle distanceFromOpponentCastle;
 
     public GameStrategyImpl(GameRepository game) {
         this.game = game;
+
+        distanceFromOpponentCastle = new DistanceFromOpponentCastle(game);
+        distanceFromFrontLine = new DistanceFromFrontLine(game);
+        moveGuard = createMoveGard();
+        trainingGuard = createTrainingGard();
+
+        CellNearFrontLineComparator cellNearFrontLineComparator = new CellNearFrontLineComparator(
+                distanceFromOpponentCastle, distanceFromFrontLine);
+
+        moveComparator = new MoveCommandComparator(game, cellNearFrontLineComparator);
+        trainComparator = new TrainCommandComparator(game, cellNearFrontLineComparator);
+    }
+
+    private MoveGuard createMoveGard() {
+        List<MoveGuard> allGuards = new ArrayList<>();
+        allGuards.add(new KeepingTiePositionMoveGuard(game));
+        return new AnyMoveGuard(allGuards);
+    }
+
+    private TrainingGuard createTrainingGard() {
+        List<TrainingGuard> allGuards = new ArrayList<>();
+        allGuards.add(new NextToFrontLineTrainingGard());
+        allGuards.add(new NoSuicideTrainingGard(game));
+        return new AnyTrainingGuard(allGuards);
     }
 
     @Override
@@ -43,10 +79,7 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private void computeDistances() {
-        distanceFromFrontLine = new DistanceFromFrontLine(game);
         distanceFromFrontLine.compute();
-
-        distanceFromOpponentCastle = new DistanceFromOpponentCastle(game);
         distanceFromOpponentCastle.compute();
     }
 
@@ -70,38 +103,22 @@ public class GameStrategyImpl implements GameStrategy {
         }
 
         candidates.stream()
-                .max(new MoveCommandComparator())
+                .max(moveComparator)
                 .ifPresent(this::addCommand);
     }
 
     private boolean isMoveUseful(MoveCommand command) {
-        List<MoveUsefulnessCriteria> moveUsefulnessCriteria = new ArrayList<>();
-        moveUsefulnessCriteria.add(new KeepingTiePositionMoveCriteria(game));
+        return !moveGuard.isUseless(command);
+    }
 
-        for (MoveUsefulnessCriteria criteria : moveUsefulnessCriteria) {
-            if (criteria.isUseless(command)) {
-                return false;
-            }
-        }
-
-        return true;
+    private boolean isTrainingUseful(TrainCommand command) {
+        return !trainingGuard.isUseless(command);
     }
 
     private void addTrainCommands() {
-        TrainedUnit trainedUnit1 = new TrainedUnit(1);
-        TrainedUnit trainedUnit2 = new TrainedUnit(2);
-        TrainedUnit trainedUnit3 = new TrainedUnit(3);
+        List<TrainCommand> candidates = generateTrainCommands();
 
-        List<TrainCommand> candidates = game.getAllCells()
-                .flatMap(cell -> Stream.of(
-                        new TrainCommand(trainedUnit1, cell, game),
-                        new TrainCommand(trainedUnit2, cell, game),
-                        new TrainCommand(trainedUnit3, cell, game)))
-                .filter(command -> !command.willNeverBeValidThisRound())
-                .collect(Collectors.toList());
-
-        Comparator<TrainCommand> comparator = new TrainCommandComparator();
-        candidates.sort(comparator);
+        candidates.sort(trainComparator);
 
         List<TrainCommand> ignored = new ArrayList<>();
 
@@ -112,7 +129,7 @@ public class GameStrategyImpl implements GameStrategy {
                 addCommand(command);
 
                 candidates.addAll(ignored);
-                candidates.sort(comparator);
+                candidates.sort(trainComparator);
 
                 ignored.clear();
             } else if (!command.willNeverBeValidThisRound()) {
@@ -121,86 +138,18 @@ public class GameStrategyImpl implements GameStrategy {
         }
     }
 
-    private boolean isTrainingUseful(TrainCommand command) {
-        List<TrainingUsefulnessCriteria> trainingUsefulnessCriteria = new ArrayList<>();
-        trainingUsefulnessCriteria.add(new NextToFrontLineTrainingCriteria());
-        trainingUsefulnessCriteria.add(new NoSuicideTrainingCriteria(game));
+    private List<TrainCommand> generateTrainCommands() {
+        TrainedUnit trainedUnit1 = new TrainedUnit(1);
+        TrainedUnit trainedUnit2 = new TrainedUnit(2);
+        TrainedUnit trainedUnit3 = new TrainedUnit(3);
 
-        for (TrainingUsefulnessCriteria criteria : trainingUsefulnessCriteria) {
-            if (criteria.isUseless(command)) {
-                return false;
-            }
-        }
-
-        return true;
+        return game.getAllCells()
+                .flatMap(cell -> Stream.of(
+                        new TrainCommand(trainedUnit1, cell, game),
+                        new TrainCommand(trainedUnit2, cell, game),
+                        new TrainCommand(trainedUnit3, cell, game)))
+                .filter(command -> !command.willNeverBeValidThisRound())
+                .collect(Collectors.toList());
     }
 
-    private static final class PositionComparator implements Comparator<Position> {
-        @Override
-        public int compare(Position o1, Position o2) {
-            return Comparator.comparingInt(Position::getX).thenComparingInt(Position::getY).compare(o1, o2);
-        }
-    }
-
-    private class MoveCommandComparator implements Comparator<MoveCommand> {
-
-        private final Comparator<MoveCommand> comparator;
-
-        private MoveCommandComparator() {
-            comparator = Comparator.comparingInt(this::getLevelOfBeatableOpponent)
-                    .thenComparing(MoveCommand::getCell, new CellNearFrontLineComparator());
-        }
-
-        private int getLevelOfBeatableOpponent(MoveCommand command) {
-            return game.getOpponentUnitAt(command.getCell().getPosition())
-                    .filter(command.getPlayerUnit()::canBeat)
-                    .map(OpponentUnit::getLevel)
-                    .orElse(0);
-        }
-
-        @Override
-        public int compare(MoveCommand o1, MoveCommand o2) {
-            return comparator.compare(o1, o2);
-        }
-    }
-
-    private class TrainCommandComparator implements Comparator<TrainCommand> {
-
-        private Comparator<TrainCommand> comparator;
-
-        private TrainCommandComparator() {
-            comparator = Comparator.<TrainCommand>comparingInt(command -> -command.getTrainedUnit().getLevel())
-                    .thenComparingInt(this::getLevelOfBeatableOpponent)
-                    .thenComparing(TrainCommand::getCell, new CellNearFrontLineComparator());
-        }
-
-        private int getLevelOfBeatableOpponent(TrainCommand command) {
-            return game.getOpponentUnitAt(command.getCell().getPosition())
-                    .filter(command.getTrainedUnit()::canBeat)
-                    .map(OpponentUnit::getLevel)
-                    .orElse(0);
-        }
-
-        @Override
-        public int compare(TrainCommand o1, TrainCommand o2) {
-            return comparator.compare(o1, o2);
-        }
-    }
-
-    private class CellNearFrontLineComparator implements Comparator<GameCell> {
-
-        private Comparator<GameCell> comparator;
-
-        private CellNearFrontLineComparator() {
-            comparator = Comparator.<GameCell>comparingInt(cell -> cell.isInMyTerritory() ? -1 : 0)
-                    .thenComparingInt(cell -> -distanceFromOpponentCastle.getDistanceOf(cell.getPosition()))
-                    .thenComparingInt(cell -> -distanceFromFrontLine.getDistanceOf(cell.getPosition()))
-                    .thenComparing(GameCell::getPosition, new PositionComparator());
-        }
-
-        @Override
-        public int compare(GameCell o1, GameCell o2) {
-            return comparator.compare(o1, o2);
-        }
-    }
 }

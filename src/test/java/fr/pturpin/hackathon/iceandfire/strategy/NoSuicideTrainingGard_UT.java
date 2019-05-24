@@ -4,6 +4,7 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.strategy.guard.NoSuicideTrainingGard;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 import org.junit.Before;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
-public class NoSuicideTrainingCriteria_UT {
+public class NoSuicideTrainingGard_UT {
 
     @Mock
     private GameRepository gameRepository;
@@ -29,13 +30,13 @@ public class NoSuicideTrainingCriteria_UT {
     @Mock
     private GameCell cell;
 
-    private NoSuicideTrainingCriteria criteria;
+    private NoSuicideTrainingGard criteria;
 
     @Before
     public void setUp() throws Exception {
         when(command.getCell()).thenReturn(cell);
 
-        criteria = new NoSuicideTrainingCriteria(gameRepository);
+        criteria = new NoSuicideTrainingGard(gameRepository);
     }
 
     @Test

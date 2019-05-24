@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.distance;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;

@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.guard;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
@@ -9,11 +9,11 @@ import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import java.util.Collection;
 import java.util.Optional;
 
-public class KeepingTiePositionMoveCriteria implements MoveUsefulnessCriteria {
+public class KeepingTiePositionMoveGuard implements MoveGuard {
 
     private final GameRepository game;
 
-    public KeepingTiePositionMoveCriteria(GameRepository game) {
+    public KeepingTiePositionMoveGuard(GameRepository game) {
         this.game = game;
     }
 

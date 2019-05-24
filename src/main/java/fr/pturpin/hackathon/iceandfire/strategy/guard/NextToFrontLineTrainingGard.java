@@ -1,9 +1,9 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.guard;
 
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 
-public class NextToFrontLineTrainingCriteria implements TrainingUsefulnessCriteria {
+public class NextToFrontLineTrainingGard implements TrainingGuard {
 
     @Override
     public boolean isUseless(TrainCommand command) {

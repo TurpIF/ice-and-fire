@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.distance;
 
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
@@ -7,7 +7,7 @@ import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import java.util.*;
 import java.util.stream.Stream;
 
-public abstract class AbstractDistanceFrom {
+abstract class AbstractDistanceFrom {
 
     protected final GameRepository game;
 
@@ -16,7 +16,7 @@ public abstract class AbstractDistanceFrom {
     private final Queue<Position> toVisit = new ArrayDeque<>(12 * 12);
     private final Set<Position> visited = new HashSet<>(12 * 12);
 
-    public AbstractDistanceFrom(GameRepository game) {
+    AbstractDistanceFrom(GameRepository game) {
         this.game = game;
     }
 

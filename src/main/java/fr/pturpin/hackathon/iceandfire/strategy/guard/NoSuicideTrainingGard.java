@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.guard;
 
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
@@ -10,11 +10,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class NoSuicideTrainingCriteria implements TrainingUsefulnessCriteria {
+public class NoSuicideTrainingGard implements TrainingGuard {
 
     private final GameRepository game;
 
-    public NoSuicideTrainingCriteria(GameRepository game) {
+    public NoSuicideTrainingGard(GameRepository game) {
         this.game = game;
     }
 

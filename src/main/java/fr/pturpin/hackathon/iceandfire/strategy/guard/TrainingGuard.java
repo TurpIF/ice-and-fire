@@ -1,8 +1,8 @@
-package fr.pturpin.hackathon.iceandfire.strategy;
+package fr.pturpin.hackathon.iceandfire.strategy.guard;
 
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 
-public interface TrainingUsefulnessCriteria {
+public interface TrainingGuard {
 
     boolean isUseless(TrainCommand command);
 
