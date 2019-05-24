@@ -1,7 +1,5 @@
 package fr.pturpin.hackathon.iceandfire.strategy;
 
-import fr.pturpin.hackathon.iceandfire.cell.GameCell;
-import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
@@ -11,13 +9,17 @@ import fr.pturpin.hackathon.iceandfire.strategy.comparator.MoveCommandComparator
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.TrainCommandComparator;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentCastle;
+import fr.pturpin.hackathon.iceandfire.strategy.generator.CommandGenerator;
+import fr.pturpin.hackathon.iceandfire.strategy.generator.MoveCommandGenerator;
+import fr.pturpin.hackathon.iceandfire.strategy.generator.TrainCommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.guard.*;
-import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
-import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.AbstractCommandSimulator;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CommandSimulator;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 public class GameStrategyImpl implements GameStrategy {
 
@@ -25,11 +27,11 @@ public class GameStrategyImpl implements GameStrategy {
     private final DistanceFromFrontLine distanceFromFrontLine;
     private final DistanceFromOpponentCastle distanceFromOpponentCastle;
 
-    private final MoveGuard moveGuard;
-    private final TrainingGuard trainingGuard;
+    private final CommandGenerator<MoveCommand> moveCommandGenerator;
 
-    private final Comparator<MoveCommand> moveComparator;
-    private final Comparator<TrainCommand> trainComparator;
+    private final CommandSimulator<MoveCommand> moveCommandSimulator;
+    private final CommandSimulator<TrainCommand> trainCommandSimulator;
+    private final TrainCommandGenerator trainCommandGenerator;
 
     private List<GameCommand> commands = new ArrayList<>();
 
@@ -38,14 +40,21 @@ public class GameStrategyImpl implements GameStrategy {
 
         distanceFromOpponentCastle = new DistanceFromOpponentCastle(game);
         distanceFromFrontLine = new DistanceFromFrontLine(game);
-        moveGuard = createMoveGard();
-        trainingGuard = createTrainingGard();
+
+        MoveGuard moveGuard = createMoveGard();
+        TrainingGuard trainingGuard = createTrainingGard();
 
         CellNearFrontLineComparator cellNearFrontLineComparator = new CellNearFrontLineComparator(
                 distanceFromOpponentCastle, distanceFromFrontLine);
 
-        moveComparator = new MoveCommandComparator(game, cellNearFrontLineComparator);
-        trainComparator = new TrainCommandComparator(game, cellNearFrontLineComparator);
+        Comparator<MoveCommand> moveComparator = new MoveCommandComparator(game, cellNearFrontLineComparator);
+        Comparator<TrainCommand> trainComparator = new TrainCommandComparator(game, cellNearFrontLineComparator);
+
+        moveCommandSimulator = new MoveCommandSimulator(moveComparator, moveGuard);
+        trainCommandSimulator = new TrainCommandSimulator(trainComparator, trainingGuard);
+
+        moveCommandGenerator = new MoveCommandGenerator(game);
+        trainCommandGenerator = new TrainCommandGenerator(game);
     }
 
     private MoveGuard createMoveGard() {
@@ -71,6 +80,21 @@ public class GameStrategyImpl implements GameStrategy {
         return commands;
     }
 
+    private void computeDistances() {
+        distanceFromFrontLine.compute();
+        distanceFromOpponentCastle.compute();
+    }
+
+    private void addMoveCommands() {
+        List<MoveCommand> candidates = moveCommandGenerator.generate();
+        moveCommandSimulator.simulate(candidates);
+    }
+
+    private void addTrainCommands() {
+        List<TrainCommand> candidates = trainCommandGenerator.generate();
+        trainCommandSimulator.simulate(candidates);
+    }
+
     private void addCommand(GameCommand command) {
         if (command.isValid()) {
             command.execute();
@@ -78,78 +102,54 @@ public class GameStrategyImpl implements GameStrategy {
         }
     }
 
-    private void computeDistances() {
-        distanceFromFrontLine.compute();
-        distanceFromOpponentCastle.compute();
-    }
+    private class TrainCommandSimulator extends AbstractCommandSimulator<TrainCommand> {
 
-    private void addMoveCommands() {
-        game.getAllPlayerUnits()
-                .sorted(Comparator.comparingInt(playerUnit -> -distanceFromFrontLine.getDistanceOf(playerUnit.getPosition())))
-                .forEach(this::addMoveCommand);
-    }
+        private TrainingGuard trainingGuard;
 
-    private void addMoveCommand(PlayerUnit unit) {
-        Collection<Position> neighbors = unit.getPosition().getNeighbors();
-        List<MoveCommand> candidates = new ArrayList<>();
-
-        for (Position neighbor : neighbors) {
-            GameCell neighborCell = game.getCell(neighbor);
-            MoveCommand command = new MoveCommand(unit, neighborCell);
-
-            if (command.isValid() && isMoveUseful(command)) {
-                candidates.add(command);
-            }
+        private TrainCommandSimulator(Comparator<TrainCommand> comparator, TrainingGuard trainingGuard) {
+            super(comparator);
+            this.trainingGuard = trainingGuard;
         }
 
-        candidates.stream()
-                .max(moveComparator)
-                .ifPresent(this::addCommand);
-    }
+        @Override
+        protected void runCommand(TrainCommand command) {
+            addCommand(command);
+        }
 
-    private boolean isMoveUseful(MoveCommand command) {
-        return !moveGuard.isUseless(command);
-    }
+        @Override
+        protected boolean isUseful(TrainCommand command) {
+            return !trainingGuard.isUseless(command);
+        }
 
-    private boolean isTrainingUseful(TrainCommand command) {
-        return !trainingGuard.isUseless(command);
-    }
-
-    private void addTrainCommands() {
-        List<TrainCommand> candidates = generateTrainCommands();
-
-        candidates.sort(trainComparator);
-
-        List<TrainCommand> ignored = new ArrayList<>();
-
-        while (!candidates.isEmpty()) {
-            TrainCommand command = candidates.remove(candidates.size() - 1);
-
-            if (command.isValid() && isTrainingUseful(command)) {
-                addCommand(command);
-
-                candidates.addAll(ignored);
-                candidates.sort(trainComparator);
-
-                ignored.clear();
-            } else if (!command.willNeverBeValidThisRound()) {
-                ignored.add(command);
-            }
+        @Override
+        protected boolean willNeverBeUsefulThisRound(TrainCommand command) {
+            return command.willNeverBeValidThisRound();
         }
     }
 
-    private List<TrainCommand> generateTrainCommands() {
-        TrainedUnit trainedUnit1 = new TrainedUnit(1);
-        TrainedUnit trainedUnit2 = new TrainedUnit(2);
-        TrainedUnit trainedUnit3 = new TrainedUnit(3);
+    private class MoveCommandSimulator extends AbstractCommandSimulator<MoveCommand> {
 
-        return game.getAllCells()
-                .flatMap(cell -> Stream.of(
-                        new TrainCommand(trainedUnit1, cell, game),
-                        new TrainCommand(trainedUnit2, cell, game),
-                        new TrainCommand(trainedUnit3, cell, game)))
-                .filter(command -> !command.willNeverBeValidThisRound())
-                .collect(Collectors.toList());
+        private MoveGuard moveGuard;
+
+        private MoveCommandSimulator(Comparator<MoveCommand> moveComparator, MoveGuard moveGuard) {
+            super(moveComparator);
+            this.moveGuard = moveGuard;
+        }
+
+        @Override
+        protected void runCommand(MoveCommand command) {
+            addCommand(command);
+        }
+
+        @Override
+        protected boolean isUseful(MoveCommand command) {
+            return !moveGuard.isUseless(command);
+        }
+
+        @Override
+        protected boolean willNeverBeUsefulThisRound(MoveCommand command) {
+            return false;
+        }
     }
 
 }
