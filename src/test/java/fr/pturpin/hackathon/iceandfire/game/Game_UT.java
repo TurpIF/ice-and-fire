@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -451,6 +452,40 @@ public class Game_UT {
         assertThat(game.getCellType(newPosition)).isEqualTo(CellType.ACTIVE_MINE);
         assertThat(game.getOpponentUnitAt(newPosition)).isEmpty();
         assertThat(game.getOpponentBuildingAt(newPosition)).isEmpty();
+    }
+
+    @Test
+    public void getAllCells_ReturnsAllCells() throws Exception {
+        Stream<GameCell> allCells = game.getAllCells();
+
+        assertThat(allCells).hasSize(12 * 12);
+    }
+
+    @Test
+    public void getAllPlayerUnits_GivenEmptyGame_ReturnsEmpy() throws Exception {
+        game.onNewTurn().setUnitCount(0);
+
+        Stream<PlayerUnit> allPlayerUnits = game.getAllPlayerUnits();
+
+        assertThat(allPlayerUnits).isEmpty();
+    }
+
+    @Test
+    public void getAllPlayerUnits_GivenSomeUnits_ReturnsThem() throws Exception {
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.ME, 1, 1, new Position(0, 0));
+        game.onNewTurn().setUnitCount(3);
+        game.onNewTurn().addUnit(Owner.ME, 2, 1, new Position(1, 0));
+        game.onNewTurn().addUnit(Owner.OTHER, 3, 1, new Position(2, 0));
+        game.onNewTurn().addUnit(Owner.ME, 4, 1, new Position(3, 0));
+
+        Stream<PlayerUnit> allPlayerUnits = game.getAllPlayerUnits();
+
+        assertThat(allPlayerUnits)
+                .hasSize(2)
+                .containsExactlyInAnyOrder(
+                        game.getPlayerUnitAt(new Position(1, 0)).get(),
+                        game.getPlayerUnitAt(new Position(3, 0)).get());
     }
 
     private CellType[] getFullGrid(CellType cellType) {

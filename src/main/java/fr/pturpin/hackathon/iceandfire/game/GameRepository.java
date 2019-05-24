@@ -6,6 +6,7 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface GameRepository {
 
@@ -30,4 +31,8 @@ public interface GameRepository {
     void moveUnit(PlayerUnit playerUnit, GameCell newCell);
 
     void invokeNewUnit(TrainedUnit trainedUnit, GameCell cell);
+
+    Stream<GameCell> getAllCells();
+
+    Stream<PlayerUnit> getAllPlayerUnits();
 }

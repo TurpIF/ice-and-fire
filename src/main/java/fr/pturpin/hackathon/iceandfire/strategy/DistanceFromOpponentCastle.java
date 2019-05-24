@@ -1,14 +1,14 @@
 package fr.pturpin.hackathon.iceandfire.strategy;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
-import fr.pturpin.hackathon.iceandfire.game.Game;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 
 import java.util.stream.Stream;
 
 public class DistanceFromOpponentCastle extends AbstractDistanceFrom {
 
-    public DistanceFromOpponentCastle(Game game) {
+    public DistanceFromOpponentCastle(GameRepository game) {
         super(game);
     }
 

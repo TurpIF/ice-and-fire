@@ -2,22 +2,21 @@ package fr.pturpin.hackathon.iceandfire.strategy;
 
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
-import fr.pturpin.hackathon.iceandfire.game.Game;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 
 import java.util.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public abstract class AbstractDistanceFrom {
 
-    protected final Game game;
+    protected final GameRepository game;
 
     // FIXME this class should not be aware of the grid size
     private final int[] distances = new int[12 * 12];
     private final Queue<Position> toVisit = new ArrayDeque<>(12 * 12);
     private final Set<Position> visited = new HashSet<>(12 * 12);
 
-    public AbstractDistanceFrom(Game game) {
+    public AbstractDistanceFrom(GameRepository game) {
         this.game = game;
     }
 
@@ -65,17 +64,10 @@ public abstract class AbstractDistanceFrom {
     protected abstract Stream<Position> getStartingCellsToVisit();
 
     private void ignoreWalls() {
-        getAllPositions().forEach(position -> {
-            GameCell cell = game.getCell(position);
-            if (cell.isWall()) {
-                visited.add(position);
-            }
-        });
-    }
-
-    protected Stream<Position> getAllPositions() {
-        return IntStream.range(0, 12).boxed().flatMap(x ->
-                IntStream.range(0, 12).mapToObj(y -> new Position(x, y)));
+        game.getAllCells()
+                .filter(GameCell::isWall)
+                .map(GameCell::getPosition)
+                .forEach(visited::add);
     }
 
     public int getDistanceOf(Position position) {

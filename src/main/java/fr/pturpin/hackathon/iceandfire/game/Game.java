@@ -8,6 +8,8 @@ import fr.pturpin.hackathon.iceandfire.strategy.GameStrategyImpl;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Game implements GameRepository {
 
@@ -34,6 +36,11 @@ public class Game implements GameRepository {
     @Override
     public int getPlayerGold() {
         return playerGold;
+    }
+
+    @Override
+    public Stream<PlayerUnit> getAllPlayerUnits() {
+        return playerUnits.values().stream();
     }
 
     @Override
@@ -65,6 +72,16 @@ public class Game implements GameRepository {
     @Override
     public GameCell getCell(Position position) {
         return new GameCell(this, position);
+    }
+
+    @Override
+    public Stream<GameCell> getAllCells() {
+        return getAllPositions().map(this::getCell);
+    }
+
+    private Stream<Position> getAllPositions() {
+        return IntStream.range(0, 12).boxed().flatMap(x ->
+                IntStream.range(0, 12).mapToObj(y -> new Position(x, y)));
     }
 
     @Override
@@ -128,17 +145,14 @@ public class Game implements GameRepository {
 
         @Override
         public void setPlayerRevenue(int playerRevenue) {
-            // TODO
         }
 
         @Override
         public void setOpponentGold(int opponentGold) {
-            // TODO
         }
 
         @Override
         public void setOpponentRevenue(int opponentRevenue) {
-            // TODO
         }
 
         @Override

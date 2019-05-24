@@ -5,24 +5,23 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
-import fr.pturpin.hackathon.iceandfire.game.Game;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class GameStrategyImpl implements GameStrategy {
 
-    private final Game game;
+    private final GameRepository game;
     private List<GameCommand> commands = new ArrayList<>();
     private DistanceFromFrontLine distanceFromFrontLine;
     private DistanceFromOpponentCastle distanceFromOpponentCastle;
 
-    public GameStrategyImpl(Game game) {
+    public GameStrategyImpl(GameRepository game) {
         this.game = game;
     }
 
@@ -52,9 +51,7 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private void addMoveCommands() {
-        // FIXME repository should provide a getPlayerUnits method
-        getAllPositions().map(game::getPlayerUnitAt)
-                .flatMap(this::stream)
+        game.getAllPlayerUnits()
                 .sorted(Comparator.comparingInt(playerUnit -> -distanceFromFrontLine.getDistanceOf(playerUnit.getPosition())))
                 .forEach(this::addMoveCommand);
     }
@@ -78,7 +75,6 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private boolean isMoveUseful(MoveCommand command) {
-        GameCell cell = command.getCell();
         PlayerUnit playerUnit = command.getPlayerUnit();
 
         // If I'm next to an opponent that can't beat me and that I can't beat, then stay.
@@ -104,8 +100,7 @@ public class GameStrategyImpl implements GameStrategy {
         TrainedUnit trainedUnit2 = new TrainedUnit(2);
         TrainedUnit trainedUnit3 = new TrainedUnit(3);
 
-        List<TrainCommand> candidates = getAllPositions()
-                .map(game::getCell)
+        List<TrainCommand> candidates = game.getAllCells()
                 .flatMap(cell -> Stream.of(
                         new TrainCommand(trainedUnit1, cell, game),
                         new TrainCommand(trainedUnit2, cell, game),
@@ -146,16 +141,6 @@ public class GameStrategyImpl implements GameStrategy {
         }
 
         return true;
-    }
-
-    private Stream<Position> getAllPositions() {
-        // FIXME repository should provide a method getAllCells
-        return IntStream.range(0, 12).boxed().flatMap(x ->
-                IntStream.range(0, 12).mapToObj(y -> new Position(x, y)));
-    }
-
-    private <T> Stream<T> stream(Optional<T> optional) {
-        return optional.map(Stream::of).orElseGet(Stream::empty);
     }
 
     private static final class PositionComparator implements Comparator<Position> {

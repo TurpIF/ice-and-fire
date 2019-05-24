@@ -2,23 +2,21 @@ package fr.pturpin.hackathon.iceandfire.strategy;
 
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
-import fr.pturpin.hackathon.iceandfire.game.Game;
+import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 
 import java.util.stream.Stream;
 
 public class DistanceFromFrontLine extends AbstractDistanceFrom {
 
-    public DistanceFromFrontLine(Game game) {
+    public DistanceFromFrontLine(GameRepository game) {
         super(game);
     }
 
     @Override
     protected Stream<Position> getStartingCellsToVisit() {
-        return getAllPositions().filter(this::isNotInMyTerritory);
+        return game.getAllCells()
+                .filter(cell -> !cell.isInMyTerritory())
+                .map(GameCell::getPosition);
     }
 
-    private boolean isNotInMyTerritory(Position position) {
-        GameCell cell = game.getCell(position);
-        return !cell.isInMyTerritory();
-    }
 }
