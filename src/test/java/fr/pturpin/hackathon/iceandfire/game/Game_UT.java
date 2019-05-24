@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class Game_UT {
 
@@ -365,6 +367,22 @@ public class Game_UT {
         assertThat(game.getCellType(newPosition)).isEqualTo(CellType.ACTIVE_MINE);
         assertThat(game.getOpponentUnitAt(newPosition)).isEmpty();
         assertThat(game.getOpponentBuildingAt(newPosition)).isEmpty();
+    }
+
+    @Test
+    public void invokeNewUnit_GivenPlayerGold_RemoveTrainingCost() throws Exception {
+        GameCell newCell = game.getCell(new Position(1, 0));
+        TrainedUnit trainedUnit = spy(new TrainedUnit(3));
+
+        game.onNewTurn().setPlayerGold(10);
+        game.onNewTurn().setGrid(getFullGrid(CellType.NEUTRAL));
+        when(trainedUnit.getTrainingCost()).thenReturn(7);
+
+        game.invokeNewUnit(trainedUnit, newCell);
+
+        int playerGold = game.getPlayerGold();
+
+        assertThat(playerGold).isEqualTo(3);
     }
 
     @Test

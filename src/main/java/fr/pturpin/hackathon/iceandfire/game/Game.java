@@ -114,6 +114,7 @@ public class Game implements GameRepository {
     public void invokeNewUnit(TrainedUnit trainedUnit, GameCell cell) {
         PlayerUnit playerUnit = new PlayerUnit(-1, cell, trainedUnit, false);
         moveUnit(playerUnit, cell);
+        playerGold -= trainedUnit.getTrainingCost();
     }
 
     private void propagateActiveTerritory(Position origin) {
