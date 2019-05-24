@@ -15,6 +15,7 @@ public class TrainCommandComparator implements Comparator<TrainCommand> {
         this.gameRepository = gameRepository;
 
         comparator = Comparator.<TrainCommand>comparingInt(command -> -command.getTrainedUnit().getLevel())
+                .thenComparing(new BeatableOpponentTrainComparator(gameRepository))
                 .thenComparingInt(this::getLevelOfBeatableOpponent)
                 .thenComparing(TrainCommand::getCell, cellNearFrontLineComparator);
     }
