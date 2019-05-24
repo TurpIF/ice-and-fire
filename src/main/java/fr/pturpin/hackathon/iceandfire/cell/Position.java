@@ -30,6 +30,10 @@ public final class Position {
         return Math.abs(x - position.getX()) + Math.abs(y - position.getY());
     }
 
+    public double l2Norm(Position other) {
+        return Math.sqrt(Math.pow(x - other.x, 2) + Math.pow(y - other.y, 2));
+    }
+
     public int getX() {
         return x;
     }
