@@ -75,20 +75,12 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private boolean isMoveUseful(MoveCommand command) {
-        PlayerUnit playerUnit = command.getPlayerUnit();
+        List<MoveUsefulnessCriteria> moveUsefulnessCriteria = new ArrayList<>();
+        moveUsefulnessCriteria.add(new KeepingTiePositionMoveCriteria(game));
 
-        // If I'm next to an opponent that can't beat me and that I can't beat, then stay.
-        {
-            Collection<Position> neighbors = playerUnit.getPosition().getNeighbors();
-            for (Position neighbor : neighbors) {
-                Optional<OpponentUnit> optOpponentUnit = game.getOpponentUnitAt(neighbor);
-                if (optOpponentUnit.isPresent()) {
-                    OpponentUnit opponentUnit = optOpponentUnit.get();
-                    boolean isTie = !playerUnit.canBeat(opponentUnit) && !opponentUnit.canBeat(playerUnit);
-                    if (isTie) {
-                        return false;
-                    }
-                }
+        for (MoveUsefulnessCriteria criteria : moveUsefulnessCriteria) {
+            if (criteria.isUseless(command)) {
+                return false;
             }
         }
 
@@ -130,9 +122,9 @@ public class GameStrategyImpl implements GameStrategy {
     }
 
     private boolean isTrainingUseful(TrainCommand command) {
-        List<TrainingUsefulnessCriteria> trainingUsefulnessCriteria = Arrays.asList(
-                new NextToFrontLineTrainingCriteria(distanceFromFrontLine),
-                new NoSuicideTrainingCriteria(game));
+        List<TrainingUsefulnessCriteria> trainingUsefulnessCriteria = new ArrayList<>();
+        trainingUsefulnessCriteria.add(new NextToFrontLineTrainingCriteria());
+        trainingUsefulnessCriteria.add(new NoSuicideTrainingCriteria(game));
 
         for (TrainingUsefulnessCriteria criteria : trainingUsefulnessCriteria) {
             if (criteria.isUseless(command)) {
