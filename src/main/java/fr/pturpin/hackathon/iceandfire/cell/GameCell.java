@@ -59,6 +59,10 @@ public class GameCell {
         return gameRepository.getCellType(position) == CellType.ACTIVE_MINE;
     }
 
+    public boolean isInOpponentTerritory() {
+        return gameRepository.getCellType(position) == CellType.ACTIVE_THEIR;
+    }
+
     public boolean isWall() {
         return gameRepository.getCellType(position) == CellType.NIL;
     }
@@ -75,6 +79,10 @@ public class GameCell {
     }
 
     public boolean isProtectedByOpponentTower() {
+        if (!isInOpponentTerritory()) {
+            return false;
+        }
+
         return getPosition().getNeighbors().stream()
                 .map(gameRepository::getCell)
                 .anyMatch(GameCell::containsTower);

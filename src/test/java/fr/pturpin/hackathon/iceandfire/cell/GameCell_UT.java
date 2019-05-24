@@ -329,6 +329,7 @@ public class GameCell_UT {
         GameCell cellWithTower = mock(GameCell.class);
         GameCell cellWithoutTower = mock(GameCell.class);
 
+        when(gameRepository.getCellType(position)).thenReturn(CellType.ACTIVE_THEIR);
         when(cellWithTower.containsTower()).thenReturn(true);
         when(cellWithoutTower.containsTower()).thenReturn(false);
 
@@ -347,10 +348,20 @@ public class GameCell_UT {
     }
 
     @Test
+    public void isProtectedByOpponentTower_GivenCellNotInOpponentTerritory_ReturnsFalse() throws Exception {
+        when(gameRepository.getCellType(position)).thenReturn(CellType.INACTIVE_THEIR);
+
+        boolean isProtected = cell.isProtectedByOpponentTower();
+
+        assertThat(isProtected).isFalse();
+    }
+
+    @Test
     public void isProtectedByOpponentTower_GivenGameWithNoTowerOnAllNeighborCells_ReturnsFalse() throws Exception {
         GameCell cellWithoutTower = mock(GameCell.class);
         when(cellWithoutTower.containsTower()).thenReturn(false);
 
+        when(gameRepository.getCellType(position)).thenReturn(CellType.ACTIVE_THEIR);
         when(gameRepository.getCell(any())).thenReturn(cellWithoutTower);
 
         boolean isProtected = cell.isProtectedByOpponentTower();
