@@ -160,6 +160,51 @@ public class TrainCommand_UT {
         assertThat(valid).isTrue();
     }
 
+    @Test
+    public void willNeverBeValidThisRound_GivenValueTrain_ReturnsFalse() throws Exception {
+        givenValidTrain();
+
+        boolean willNeverBeValidThisRound = command.willNeverBeValidThisRound();
+
+        assertThat(willNeverBeValidThisRound).isFalse();
+    }
+
+    @Test
+    public void willNeverBeValidThisRound_GivenNotEnoughGold_ReturnsTrue() throws Exception {
+        // The gold is only decreasing during a round. This means that if at some time in the round there is
+        // not enough gold, then there will never be enough gold until the end of the round.
+        givenValidTrain();
+        when(gameRepository.getPlayerGold()).thenReturn(10);
+        when(trainedUnit.getTrainingCost()).thenReturn(11);
+
+        boolean willNeverBeValidThisRound = command.willNeverBeValidThisRound();
+
+        assertThat(willNeverBeValidThisRound).isTrue();
+    }
+
+    @Test
+    public void willNeverBeValidThisRound_GivenWall_ReturnsTrue() throws Exception {
+        givenValidTrain();
+        when(cell.isWall()).thenReturn(true);
+
+        boolean willNeverBeValidThisRound = command.willNeverBeValidThisRound();
+
+        assertThat(willNeverBeValidThisRound).isTrue();
+    }
+
+    @Test
+    public void willNeverBeValidThisRound_GivenUnbeatableOpponent_ReturnsTrue() throws Exception {
+        // If there is an unbeatable opponent for this trained unit, then this unit can't currently go on this cell.
+        // And even if another unit beat the opponent, then it could not move again, blocking the cell.
+
+        givenValidTrain();
+        when(cell.containsBeatableOpponentFor(trainedUnit)).thenReturn(false);
+
+        boolean willNeverBeValidThisRound = command.willNeverBeValidThisRound();
+
+        assertThat(willNeverBeValidThisRound).isTrue();
+    }
+
     private void givenValidTrain() {
         when(cell.containsAlly()).thenReturn(false);
         when(cell.isInMyTerritoryOrInItsNeighborhood()).thenReturn(true);

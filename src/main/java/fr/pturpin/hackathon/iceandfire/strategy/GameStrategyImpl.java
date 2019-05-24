@@ -32,17 +32,12 @@ public class GameStrategyImpl implements GameStrategy {
 
         commands.clear();
         addMoveCommands();
-        addTrainCommands(1);
-        addTrainCommands(2);
-        addTrainCommands(3);
+        addTrainCommands();
         return commands;
     }
 
     private void addCommand(GameCommand command) {
         if (command.isValid()) {
-            // TODO sequentially simulates command so further ones are accurate
-            //  If done, then commands should be ordered to maximize a winning criteria.
-            //  Training commands' generation should be be bulked.
             command.execute();
             commands.add(command);
         }
@@ -60,6 +55,7 @@ public class GameStrategyImpl implements GameStrategy {
         // FIXME repository should provide a getPlayerUnits method
         getAllPositions().map(game::getPlayerUnitAt)
                 .flatMap(this::stream)
+                .sorted(Comparator.comparingInt(playerUnit -> -distanceFromFrontLine.getDistanceOf(playerUnit.getPosition())))
                 .forEach(this::addMoveCommand);
     }
 
@@ -103,19 +99,39 @@ public class GameStrategyImpl implements GameStrategy {
         return true;
     }
 
-    private void addTrainCommands(int level) {
-        TrainedUnit trainedUnit = new TrainedUnit(level);
+    private void addTrainCommands() {
+        TrainedUnit trainedUnit1 = new TrainedUnit(1);
+        TrainedUnit trainedUnit2 = new TrainedUnit(2);
+        TrainedUnit trainedUnit3 = new TrainedUnit(3);
 
         List<TrainCommand> candidates = getAllPositions()
                 .map(game::getCell)
-                .filter(GameCell::isInMyTerritoryOrInItsNeighborhood)
-                .map(cell -> new TrainCommand(trainedUnit, cell, game))
-                .filter(GameCommand::isValid)
-                .filter(this::isTrainingUseful)
-                .sorted(new TrainCommandComparator().reversed())
+                .flatMap(cell -> Stream.of(
+                        new TrainCommand(trainedUnit1, cell, game),
+                        new TrainCommand(trainedUnit2, cell, game),
+                        new TrainCommand(trainedUnit3, cell, game)))
+                .filter(command -> !command.willNeverBeValidThisRound())
                 .collect(Collectors.toList());
 
-        candidates.forEach(this::addCommand);
+        Comparator<TrainCommand> comparator = new TrainCommandComparator();
+        candidates.sort(comparator);
+
+        List<TrainCommand> ignored = new ArrayList<>();
+
+        while (!candidates.isEmpty()) {
+            TrainCommand command = candidates.remove(candidates.size() - 1);
+
+            if (command.isValid() && isTrainingUseful(command)) {
+                addCommand(command);
+
+                candidates.addAll(ignored);
+                candidates.sort(comparator);
+
+                ignored.clear();
+            } else if (!command.willNeverBeValidThisRound()) {
+                ignored.add(command);
+            }
+        }
     }
 
     private boolean isTrainingUseful(TrainCommand command) {
@@ -176,7 +192,8 @@ public class GameStrategyImpl implements GameStrategy {
         private Comparator<TrainCommand> comparator;
 
         private TrainCommandComparator() {
-            comparator = Comparator.comparingInt(this::getLevelOfBeatableOpponent)
+            comparator = Comparator.<TrainCommand>comparingInt(command -> -command.getTrainedUnit().getLevel())
+                    .thenComparingInt(this::getLevelOfBeatableOpponent)
                     .thenComparing(TrainCommand::getCell, new CellNearFrontLineComparator());
         }
 

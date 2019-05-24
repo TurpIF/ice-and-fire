@@ -31,13 +31,20 @@ public class TrainCommand implements GameCommand {
 
     @Override
     public boolean isValid() {
-        boolean hasEnoughGold = gameRepository.getPlayerGold() >= trainedUnit.getTrainingCost();
-        return hasEnoughGold
-                && !gameCell.isWall()
+        return !willNeverBeValidThisRound()
                 && !gameCell.containsAlly()
                 && gameCell.isInMyTerritoryOrInItsNeighborhood()
-                && gameCell.containsBeatableOpponentFor(trainedUnit)
                 && isNotProtectedByOpponentTower();
+    }
+
+    private boolean hasEnoughGold() {
+        return gameRepository.getPlayerGold() >= trainedUnit.getTrainingCost();
+    }
+
+    public boolean willNeverBeValidThisRound() {
+        return !(hasEnoughGold()
+                && !gameCell.isWall()
+                && gameCell.containsBeatableOpponentFor(trainedUnit));
     }
 
     private boolean isNotProtectedByOpponentTower() {
