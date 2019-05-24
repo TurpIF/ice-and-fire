@@ -2,8 +2,8 @@ package fr.pturpin.hackathon.iceandfire.strategy.simulator;
 
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class AbstractCommandSimulator<T extends GameCommand> implements CommandSimulator<T> {
@@ -16,30 +16,35 @@ public abstract class AbstractCommandSimulator<T extends GameCommand> implements
 
     @Override
     public void simulate(List<T> candidates) {
-        removeNeverUseful(candidates);
-
-        candidates.sort(comparator);
-
-        List<T> ignored = new ArrayList<>();
-
-        while (!candidates.isEmpty()) {
-            T command = candidates.remove(candidates.size() - 1);
-
-            if (command.isValid() && isUseful(command)) {
-                runCommand(command);
-
-                candidates.addAll(ignored);
-                candidates.sort(comparator);
-
-                ignored.clear();
-            } else if (!willNeverBeUsefulThisRound(command)) {
-                ignored.add(command);
+        while (true) {
+            T bestCandidate = findBestCandidate(candidates);
+            if (bestCandidate == null) {
+                break;
             }
+
+            runCommand(bestCandidate);
         }
     }
 
-    private void removeNeverUseful(List<T> candidates) {
-        candidates.removeIf(this::willNeverBeUsefulThisRound);
+    private T findBestCandidate(List<T> candidates) {
+        T bestCandidate = null;
+        Iterator<T> iterator = candidates.iterator();
+        while (iterator.hasNext()) {
+            T command = iterator.next();
+
+            if (willNeverBeUsefulThisRound(command)) {
+                iterator.remove();
+            } else {
+                if (command.isValid() && isUseful(command)) {
+                    if (bestCandidate == null) {
+                        bestCandidate = command;
+                    } else if (comparator.compare(command, bestCandidate) > 0) {
+                        bestCandidate = command;
+                    }
+                }
+            }
+        }
+        return bestCandidate;
     }
 
     protected abstract void runCommand(T command);
