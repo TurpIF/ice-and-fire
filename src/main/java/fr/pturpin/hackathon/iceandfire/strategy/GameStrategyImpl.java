@@ -45,7 +45,7 @@ public class GameStrategyImpl implements GameStrategy {
         TrainingGuard trainingGuard = createTrainingGard();
 
         CellNearFrontLineComparator cellNearFrontLineComparator = new CellNearFrontLineComparator(
-                distanceFromOpponentCastle, distanceFromFrontLine);
+                distanceFromOpponentCastle, distanceFromFrontLine, game);
 
         Comparator<MoveCommand> moveComparator = new MoveCommandComparator(game, cellNearFrontLineComparator);
         Comparator<TrainCommand> trainComparator = new TrainCommandComparator(game, cellNearFrontLineComparator);
