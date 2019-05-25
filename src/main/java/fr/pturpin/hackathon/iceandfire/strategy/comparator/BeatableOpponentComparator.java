@@ -50,6 +50,7 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
 
         Position position = cell.getPosition();
         gameRepository.getOpponentUnitAt(position).ifPresent(count::add);
+        gameRepository.getOpponentBuildingAt(position).ifPresent(count::add);
 
         for (Position neighbor : position.getNeighbors()) {
             GameCell neighborCell = gameRepository.getCell(neighbor);
