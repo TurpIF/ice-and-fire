@@ -65,7 +65,7 @@ public class GameStrategyImpl implements GameStrategy {
 
     private TrainingGuard createTrainingGard() {
         List<TrainingGuard> allGuards = new ArrayList<>();
-        allGuards.add(new NextToFrontLineTrainingGard());
+        allGuards.add(new NotInIsolatedNeutralZoneTrainingGuard(game));
         allGuards.add(new NoSuicideTrainingGard(game));
         return new AnyTrainingGuard(allGuards);
     }
