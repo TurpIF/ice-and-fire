@@ -4,6 +4,9 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.DfsTraversal;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentBuilding;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
@@ -14,8 +17,13 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
 
     private final GameRepository gameRepository;
 
+    private final DfsTraversal<Position> traversal;
+    private final KillCountVisitor visitor;
+
     protected BeatableOpponentComparator(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
+        traversal = new PositionDfsTraversal();
+        visitor = new KillCountVisitor();
     }
 
     @Override
@@ -54,47 +62,69 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
     }
 
     private OpponentCount getKillCountFrom(Position newVisit, Position origin) {
-        Queue<Position> toVisit = new ArrayDeque<>();
-        Set<Position> visited = new HashSet<>();
-        OpponentCount count = new OpponentCount();
+        visitor.clear();
+        visitor.setOrigin(origin);
+        traversal.traverse(newVisit, visitor);
+        return visitor.getCount();
+    }
 
-        toVisit.add(newVisit);
-        visited.add(origin);
+    private class KillCountVisitor implements TraversalVisitor<Position> {
 
-        while (!toVisit.isEmpty()) {
-            Position current = toVisit.remove();
+        private OpponentCount count = new OpponentCount();
+        private Position origin;
 
-            if (visited.contains(current)) {
-                continue;
+        void setOrigin(Position origin) {
+            this.origin = origin;
+        }
+
+        OpponentCount getCount() {
+            return count;
+        }
+
+        void clear() {
+            count.clear();
+        }
+
+        @Override
+        public TraversalContinuation visit(Position element) {
+            if (element.equals(origin)) {
+                return TraversalContinuation.SKIP;
             }
-            visited.add(current);
 
-            GameCell currentCell = gameRepository.getCell(current);
-            if (!currentCell.isInOpponentTerritory()) {
-                continue;
+            GameCell cell = gameRepository.getCell(element);
+
+            if (!cell.isInOpponentTerritory()) {
+                return TraversalContinuation.SKIP;
             }
 
-            Optional<OpponentBuilding> optBuilding = gameRepository.getOpponentBuildingAt(current);
+            Optional<OpponentBuilding> optBuilding = gameRepository.getOpponentBuildingAt(element);
             if (optBuilding.filter(building -> building.getType() == BuildingType.QG).isPresent()) {
-                return new OpponentCount();
+                count.clear();
+                return TraversalContinuation.STOP;
             }
 
             optBuilding.ifPresent(count::add);
-            gameRepository.getOpponentUnitAt(current).ifPresent(count::add);
+            gameRepository.getOpponentUnitAt(element).ifPresent(count::add);
 
-            toVisit.addAll(current.getNeighbors());
+            return TraversalContinuation.CONTINUE;
         }
-
-        return count;
     }
 
-    protected static final class OpponentCount {
+    static final class OpponentCount {
 
         int level1Count;
         int level2Count;
         int level3Count;
         int towerCount;
         int mineCount;
+
+        void clear() {
+            level1Count = 0;
+            level2Count = 0;
+            level3Count = 0;
+            towerCount = 0;
+            mineCount = 0;
+        }
 
         void add(OpponentCount other) {
             level1Count += other.level1Count;
