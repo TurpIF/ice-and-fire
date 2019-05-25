@@ -5,15 +5,29 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.DfsTraversal;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
+import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
+    private static final int MIN_DISTANCE_BETWEEN_UNITS = 3;
+    private static final int MIN_SIZE_OF_USEFUL_ZONE = 3;
+
     private final GameRepository gameRepository;
+
+    private final OnlyNeutralZoneVisitor visitor;
+    private final DfsTraversal<Position> traversal;
 
     public NotInIsolatedNeutralZoneTrainingGuard(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
+        visitor = new OnlyNeutralZoneVisitor();
+        traversal = new PositionDfsTraversal();
     }
 
     @Override
@@ -23,16 +37,30 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
         GameCell cell = command.getCell();
         Position position = cell.getPosition();
+        TrainedUnit trainedUnit = command.getTrainedUnit();
 
-        if (!isAllyUnitNearby(position)) {
-            return false;
+        VisitedZone zone = getZone(position);
+
+        if (zone.isOnlyNeutral) {
+            boolean isOverpowered = trainedUnit.getLevel() != 1;
+            if (isOverpowered) {
+                return true;
+            }
+
+            if (isAllyUnitNearby(position)) {
+                return true;
+            }
+
+            // Is not worth it
+            return zone.size < MIN_SIZE_OF_USEFUL_ZONE;
         }
 
-        return isOnlyNeutralZone(position);
+        return false;
+
     }
 
     private boolean isAllyUnitNearby(Position position) {
-        return isAllyUnitNearby(position, 3);
+        return isAllyUnitNearby(position, MIN_DISTANCE_BETWEEN_UNITS);
     }
 
     private boolean isAllyUnitNearby(Position position, int distance) {
@@ -56,44 +84,63 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
         return false;
     }
 
-    private boolean isOnlyNeutralZone(Position position) {
-        Queue<Position> toVisit = new ArrayDeque<>();
-        Set<Position> visited = new HashSet<>();
+    private VisitedZone getZone(Position position) {
+        visitor.clear();
+        traversal.traverse(position, visitor);
+        return visitor.getZone();
+    }
 
-        toVisit.add(position);
+    private class OnlyNeutralZoneVisitor implements TraversalVisitor<Position> {
 
-        while (!toVisit.isEmpty()) {
-            Position current = toVisit.remove();
+        private VisitedZone zone = new VisitedZone();
 
-            if (visited.contains(current)) {
-                continue;
+        @Override
+        public TraversalContinuation visit(Position element) {
+            if (isWall(element)) {
+                return TraversalContinuation.SKIP;
+            } else if (isNotNeural(element)) {
+                visitNotNeutral();
+                return TraversalContinuation.STOP;
             }
-            visited.add(current);
-
-            if (isWall(current)) {
-                continue;
-            }
-
-            if (isNotNeural(current)) {
-                return false;
-            }
-
-            toVisit.addAll(current.getNeighbors());
+            visitNeutral();
+            return TraversalContinuation.CONTINUE;
         }
 
-        return true;
+        void clear() {
+            zone = new VisitedZone();
+        }
+
+        VisitedZone getZone() {
+            return zone;
+        }
+
+        private void visitNeutral() {
+            zone.size++;
+        }
+
+        private void visitNotNeutral() {
+            zone.isOnlyNeutral = false;
+        }
+
+        private boolean isNotNeural(Position position) {
+            List<CellType> neutralLike = Arrays.asList(CellType.NEUTRAL, CellType.INACTIVE_THEIR);
+            CellType cellType = gameRepository.getCellType(position);
+            return !neutralLike.contains(cellType);
+        }
+
+        private boolean isWall(Position position) {
+            List<CellType> wallLike = Arrays.asList(CellType.NIL, CellType.ACTIVE_MINE, CellType.INACTIVE_MINE);
+            CellType cellType = gameRepository.getCellType(position);
+            return wallLike.contains(cellType);
+        }
+
     }
 
-    private boolean isNotNeural(Position position) {
-        List<CellType> neutralLike = Arrays.asList(CellType.NEUTRAL, CellType.INACTIVE_THEIR);
-        CellType cellType = gameRepository.getCellType(position);
-        return !neutralLike.contains(cellType);
-    }
+    private class VisitedZone {
 
-    private boolean isWall(Position position) {
-        List<CellType> wallLike = Arrays.asList(CellType.NIL, CellType.ACTIVE_MINE, CellType.INACTIVE_MINE);
-        CellType cellType = gameRepository.getCellType(position);
-        return wallLike.contains(cellType);
+        private boolean isOnlyNeutral = true;
+        private int size = 0;
+
     }
 
 }
