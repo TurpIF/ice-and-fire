@@ -15,6 +15,7 @@ public class Game implements GameRepository {
 
     private int playerGold;
     private CellType[] grid;
+    private OpponentBuilding opponentQg;
     private Map<Position, PlayerUnit> playerUnits = new HashMap<>();
     private Map<Position, OpponentUnit> opponentUnits = new HashMap<>();
     private Map<Position, PlayerBuilding> playerBuildings = new HashMap<>();
@@ -61,6 +62,11 @@ public class Game implements GameRepository {
     @Override
     public Optional<OpponentBuilding> getOpponentBuildingAt(Position position) {
         return Optional.ofNullable(opponentBuildings.get(position));
+    }
+
+    @Override
+    public OpponentBuilding getOpponentQg() {
+        return opponentQg;
     }
 
     @Override
@@ -179,8 +185,12 @@ public class Game implements GameRepository {
                 PlayerBuilding playerBuilding = new PlayerBuilding(buildingType);
                 Game.this.playerBuildings.put(position, playerBuilding);
             } else if (owner == Owner.OTHER) {
-                OpponentBuilding opponentBuilding = new OpponentBuilding(buildingType);
+                OpponentBuilding opponentBuilding = new OpponentBuilding(buildingType, position);
                 Game.this.opponentBuildings.put(position, opponentBuilding);
+
+                if (buildingType == BuildingType.QG) {
+                    Game.this.opponentQg = opponentBuilding;
+                }
             } else {
                 throwUnsupportedOwner(owner);
             }

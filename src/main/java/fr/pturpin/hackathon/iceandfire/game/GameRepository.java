@@ -20,6 +20,8 @@ public interface GameRepository {
 
     Optional<OpponentBuilding> getOpponentBuildingAt(Position position);
 
+    OpponentBuilding getOpponentQg();
+
     CellType getCellType(Position position);
 
     GameCell getCell(Position position);

@@ -506,6 +506,17 @@ public class Game_UT {
                         game.getPlayerUnitAt(new Position(3, 0)).get());
     }
 
+    @Test
+    public void getOpponentQg_GivenQg_ReturnsIt() throws Exception {
+        game.onNewTurn().setBuildingCount(1);
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.QG, position);
+
+        OpponentBuilding opponentQg = game.getOpponentQg();
+
+        assertThat(opponentQg.getType()).isEqualTo(BuildingType.QG);
+        assertThat(opponentQg.getPosition()).isEqualTo(position);
+    }
+
     private CellType[] getFullGrid(CellType cellType) {
         CellType[] grid = new CellType[12 * 12];
         Arrays.fill(grid, cellType);

@@ -6,7 +6,6 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentCastle;
-import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 
 import java.util.Comparator;
 
@@ -49,21 +48,8 @@ public class CellNearFrontLineComparator implements Comparator<GameCell> {
     }
 
     private double l2NormFromOpponentCastle(GameCell cell) {
-        return -cell.getPosition().l2Norm(findOpponentQg());
-    }
-
-    private Position findOpponentQg() {
-        // FIXME repository should provide such method
-        Position topLeftPosition = new Position(0, 0);
-        boolean isAtTopLeft = gameRepository.getOpponentBuildingAt(topLeftPosition)
-                .filter(building -> building.getType() == BuildingType.QG)
-                .isPresent();
-
-        if (isAtTopLeft) {
-            return topLeftPosition;
-        } else {
-            return new Position(11, 11);
-        }
+        Position opponentQgPosition = gameRepository.getOpponentQg().getPosition();
+        return -cell.getPosition().l2Norm(opponentQgPosition);
     }
 
     private boolean isOpponentCastle(GameCell cell) {
