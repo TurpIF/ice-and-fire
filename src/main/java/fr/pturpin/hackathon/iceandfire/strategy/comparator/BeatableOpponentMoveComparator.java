@@ -23,6 +23,7 @@ public class BeatableOpponentMoveComparator extends BeatableOpponentComparator<M
         score += count.level3Count * 6;
         score += count.towerCount;
         score += count.mineCount;
+        score += count.size;
         return score;
     }
 }

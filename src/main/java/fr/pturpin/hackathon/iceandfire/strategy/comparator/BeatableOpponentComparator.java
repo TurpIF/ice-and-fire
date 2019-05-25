@@ -106,6 +106,8 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
             optBuilding.ifPresent(count::add);
             gameRepository.getOpponentUnitAt(element).ifPresent(count::add);
 
+            count.size++;
+
             return TraversalContinuation.CONTINUE;
         }
     }
@@ -117,6 +119,7 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
         int level3Count;
         int towerCount;
         int mineCount;
+        int size;
 
         void clear() {
             level1Count = 0;
@@ -124,14 +127,16 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
             level3Count = 0;
             towerCount = 0;
             mineCount = 0;
+            size = 0;
         }
 
         void add(OpponentCount other) {
             level1Count += other.level1Count;
             level2Count += other.level2Count;
             level3Count += other.level3Count;
-            towerCount += towerCount;
-            mineCount += mineCount;
+            towerCount += other.towerCount;
+            mineCount += other.mineCount;
+            size += other.size;
         }
 
         void add(OpponentUnit unit) {
