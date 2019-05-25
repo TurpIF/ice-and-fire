@@ -5,6 +5,8 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.strategy.GameStrategy;
 import fr.pturpin.hackathon.iceandfire.strategy.GameStrategyImpl;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
+import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
 import java.util.*;
@@ -21,6 +23,16 @@ public class Game implements GameRepository {
     private Map<Position, PlayerBuilding> playerBuildings = new HashMap<>();
     private Map<Position, OpponentBuilding> opponentBuildings = new HashMap<>();
     private Set<Position> mineSpots = new HashSet<>();
+
+    private final PositionDfsTraversal traversal;
+    private final PropagateActiveTerritoryVisitor activatingVisitor;
+    private final PropagateDeactivateTerritoryVisitor deactivatingVisitor;
+
+    public Game() {
+        traversal = new PositionDfsTraversal();
+        activatingVisitor = new PropagateActiveTerritoryVisitor();
+        deactivatingVisitor = new PropagateDeactivateTerritoryVisitor();
+    }
 
     public GameInitialization onInitialization() {
         return new OnInitialization();
@@ -124,19 +136,81 @@ public class Game implements GameRepository {
     }
 
     private void propagateActiveTerritory(Position origin) {
-        Queue<Position> toActivate = new ArrayDeque<>();
-        toActivate.add(origin);
+        activatingVisitor.setOrigin(origin);
+        traversal.traverse(origin, activatingVisitor);
 
-        while (!toActivate.isEmpty()) {
-            Position current = toActivate.remove();
-            grid[toIndex(current)] = CellType.ACTIVE_MINE;
-
-            for (Position neighbor : current.getNeighbors()) {
-                if (grid[toIndex(neighbor)] == CellType.INACTIVE_MINE) {
-                    toActivate.add(neighbor);
-                }
-            }
+        for (Position neighbor : origin.getNeighbors()) {
+            traversal.traverse(neighbor, deactivatingVisitor);
+            deactivatingVisitor.apply();
         }
+    }
+
+    private class PropagateDeactivateTerritoryVisitor implements TraversalVisitor<Position> {
+
+        private boolean isIsolated = true;
+        private List<Integer> toDeactivate = new ArrayList<>();
+
+        @Override
+        public TraversalContinuation visit(Position element) {
+            if (isOpponentQg(element)) {
+                isIsolated = false;
+                return TraversalContinuation.STOP;
+            }
+
+            int index = toIndex(element);
+
+            if (grid[index] != CellType.ACTIVE_THEIR) {
+                return TraversalContinuation.SKIP;
+            }
+
+            toDeactivate.add(index);
+            return TraversalContinuation.CONTINUE;
+        }
+
+        private boolean isOpponentQg(Position element) {
+            OpponentBuilding opponentQg = getOpponentQg();
+            return opponentQg != null && opponentQg.getPosition().equals(element);
+        }
+
+        void apply() {
+            if (!isIsolated) {
+                init();
+                return;
+            }
+
+            toDeactivate.forEach(index -> {
+                grid[index] = CellType.INACTIVE_THEIR;
+            });
+
+            init();
+        }
+
+        private void init() {
+            toDeactivate.clear();
+            isIsolated = true;
+        }
+    }
+
+    private class PropagateActiveTerritoryVisitor implements TraversalVisitor<Position> {
+
+
+        private Position origin;
+
+        void setOrigin(Position origin) {
+            this.origin = origin;
+        }
+        @Override
+        public TraversalContinuation visit(Position element) {
+            int index = toIndex(element);
+
+            if (grid[index] != CellType.INACTIVE_MINE && !element.equals(origin)) {
+                return TraversalContinuation.SKIP;
+            }
+
+            grid[index] = CellType.ACTIVE_MINE;
+            return TraversalContinuation.CONTINUE;
+        }
+
     }
 
     private int toIndex(Position position) {

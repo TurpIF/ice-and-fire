@@ -349,6 +349,34 @@ public class Game_UT {
         assertThat(game.getCellType(new Position(4, 2))).isEqualTo(CellType.INACTIVE_MINE);
     }
 
+    @Test
+    public void invokeNewUnit_GivenCellConnectingOpponentCells_MakesThenInactiveButKeepUnitsAndBuildings() throws Exception {
+        CellType[] grid = getFullGrid(CellType.NEUTRAL);
+        grid[toIndex(new Position(0, 0))] = CellType.ACTIVE_THEIR;
+        grid[toIndex(new Position(1, 0))] = CellType.ACTIVE_THEIR;
+        grid[toIndex(new Position(2, 0))] = CellType.ACTIVE_THEIR;
+        grid[toIndex(new Position(3, 0))] = CellType.ACTIVE_THEIR;
+        grid[toIndex(new Position(3, 1))] = CellType.ACTIVE_THEIR;
+
+        game.onNewTurn().setGrid(grid);
+        game.onNewTurn().setBuildingCount(2);
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.QG, new Position(0, 0));
+        game.onNewTurn().addBuilding(Owner.OTHER, BuildingType.TOWER, new Position(3, 0));
+        game.onNewTurn().setUnitCount(1);
+        game.onNewTurn().addUnit(Owner.OTHER, 1, 1, new Position(2, 0));
+
+        GameCell cell = game.getCell(new Position(1, 0));
+        game.invokeNewUnit(new TrainedUnit(1), cell);
+
+        assertThat(game.getCellType(new Position(1, 0))).isEqualTo(CellType.ACTIVE_MINE);
+        assertThat(game.getCellType(new Position(0, 0))).isEqualTo(CellType.ACTIVE_THEIR);
+        assertThat(game.getCellType(new Position(2, 0))).isEqualTo(CellType.INACTIVE_THEIR);
+        assertThat(game.getCellType(new Position(3, 0))).isEqualTo(CellType.INACTIVE_THEIR);
+        assertThat(game.getCellType(new Position(3, 1))).isEqualTo(CellType.INACTIVE_THEIR);
+        assertThat(game.getOpponentUnitAt(new Position(2, 0))).isNotEmpty();
+        assertThat(game.getOpponentBuildingAt(new Position(3, 0))).isNotEmpty();
+    }
+
     private int toIndex(Position position) {
         return position.getY() * 12 + position.getX();
     }
