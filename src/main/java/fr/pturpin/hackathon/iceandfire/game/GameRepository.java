@@ -39,4 +39,6 @@ public interface GameRepository {
     Stream<GameCell> getAllCells();
 
     Stream<PlayerUnit> getAllPlayerUnits();
+
+    void setCellType(Position position, CellType cellType);
 }

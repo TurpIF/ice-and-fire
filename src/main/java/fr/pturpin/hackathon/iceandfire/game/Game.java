@@ -88,6 +88,12 @@ public class Game implements GameRepository {
     }
 
     @Override
+    public void setCellType(Position position, CellType cellType) {
+        int index = toIndex(position);
+        grid[index] = cellType;
+    }
+
+    @Override
     public GameCell getCell(Position position) {
         return new GameCell(this, position);
     }

@@ -1,5 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.strategy.comparator;
 
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
@@ -53,7 +54,10 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
 
         int neighborScore = 0;
         if (gameRepository.getPlayerGold() >= trainingCost) {
-            Collection<Position> neighbors = cell.getPosition().getNeighbors();
+            Position position = cell.getPosition();
+            CellType oldCellType = gameRepository.getCellType(position);
+            gameRepository.setCellType(position, CellType.ACTIVE_MINE);
+            Collection<Position> neighbors = position.getNeighbors();
             for (Position neighbor : neighbors) {
                 GameCell neighborCell = gameRepository.getCell(neighbor);
                 OpponentCount neighborCount = getBeatableOpponentCount(neighborCell);
@@ -62,6 +66,7 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
                     neighborScore = score;
                 }
             }
+            gameRepository.setCellType(position, oldCellType);
         }
         return neighborScore;
     }

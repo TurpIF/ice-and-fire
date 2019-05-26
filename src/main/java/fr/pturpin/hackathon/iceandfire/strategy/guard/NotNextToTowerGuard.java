@@ -4,10 +4,10 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.BuildCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
-import fr.pturpin.hackathon.iceandfire.unit.PlayerBuilding;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NotNextToTowerGuard implements BuildGuard {
 
@@ -19,19 +19,20 @@ public class NotNextToTowerGuard implements BuildGuard {
 
     @Override
     public boolean isUseless(BuildCommand command) {
-        Collection<Position> neighbors = command.getCell().getPosition().getNeighbors();
+        Set<Position> neighborhood = new HashSet<>();
+        Position position = command.getCell().getPosition();
+        Collection<Position> neighbors = position.getNeighbors();
 
         for (Position neighbor : neighbors) {
-            Optional<PlayerBuilding> optBuilding = gameRepository.getPlayerBuildingAt(neighbor);
-            if (optBuilding.isPresent()) {
-                PlayerBuilding building = optBuilding.get();
-                if (building.getType() == BuildingType.TOWER) {
-                    return true;
-                }
-            }
+            neighborhood.add(neighbor);
+            neighborhood.addAll(neighbor.getNeighbors());
         }
 
-        return false;
+        return neighborhood.stream()
+                .map(gameRepository::getPlayerBuildingAt)
+                .anyMatch(optBuilding -> optBuilding
+                        .filter(building -> building.getType() == BuildingType.TOWER)
+                        .isPresent());
     }
 
 }
