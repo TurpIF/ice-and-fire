@@ -24,7 +24,7 @@ public class NoSuicideTrainingGard implements TrainingGuard {
         GameCell cell = command.getCell();
         TrainedUnit trainedUnit = command.getTrainedUnit();
 
-        if (cell.isInMyTerritory()) {
+        if (!cell.isInOpponentTerritory()) {
             Collection<Position> neighbors = cell.getPosition().getNeighbors();
 
             return neighbors.stream()

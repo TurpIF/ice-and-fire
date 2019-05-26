@@ -1,16 +1,19 @@
 package fr.pturpin.hackathon.iceandfire.strategy;
 
+import fr.pturpin.hackathon.iceandfire.command.BuildCommand;
 import fr.pturpin.hackathon.iceandfire.command.GameCommand;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.CellNearFrontLineComparator;
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.MoveCommandComparator;
+import fr.pturpin.hackathon.iceandfire.strategy.comparator.TowerCommandComparator;
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.TrainCommandComparator;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentCastle;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.CommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.MoveCommandGenerator;
+import fr.pturpin.hackathon.iceandfire.strategy.generator.TowerBuildCommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.TrainCommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.guard.*;
 import fr.pturpin.hackathon.iceandfire.strategy.simulator.AbstractCommandSimulator;
@@ -28,10 +31,12 @@ public class GameStrategyImpl implements GameStrategy {
     private final DistanceFromOpponentCastle distanceFromOpponentCastle;
 
     private final CommandGenerator<MoveCommand> moveCommandGenerator;
+    private final CommandGenerator<TrainCommand> trainCommandGenerator;
+    private final CommandGenerator<BuildCommand> towerCommandGenerator;
 
     private final CommandSimulator<MoveCommand> moveCommandSimulator;
     private final CommandSimulator<TrainCommand> trainCommandSimulator;
-    private final TrainCommandGenerator trainCommandGenerator;
+    private final CommandSimulator<BuildCommand> towerCommandSimulator;
 
     private List<GameCommand> commands = new ArrayList<>();
 
@@ -49,12 +54,15 @@ public class GameStrategyImpl implements GameStrategy {
 
         Comparator<MoveCommand> moveComparator = new MoveCommandComparator(game, cellNearFrontLineComparator);
         Comparator<TrainCommand> trainComparator = new TrainCommandComparator(game, cellNearFrontLineComparator);
+        Comparator<BuildCommand> towerComparator = new TowerCommandComparator(); // game, cellNearFrontLineComparator);
 
         moveCommandSimulator = new MoveCommandSimulator(moveComparator, moveGuard);
         trainCommandSimulator = new TrainCommandSimulator(trainComparator, trainingGuard);
+        towerCommandSimulator = new BuildCommandSimulator(towerComparator);
 
         moveCommandGenerator = new MoveCommandGenerator(game);
         trainCommandGenerator = new TrainCommandGenerator(game);
+        towerCommandGenerator = new TowerBuildCommandGenerator(game);
     }
 
     private MoveGuard createMoveGard() {
@@ -65,8 +73,10 @@ public class GameStrategyImpl implements GameStrategy {
 
     private TrainingGuard createTrainingGard() {
         List<TrainingGuard> allGuards = new ArrayList<>();
-        allGuards.add(new NotInIsolatedNeutralZoneTrainingGuard(game));
+        allGuards.add(new NextToFrontLineTrainingGard(distanceFromFrontLine));
+        allGuards.add(new NotBehindFrontLineTrainingGuard(game));
         allGuards.add(new NoSuicideTrainingGard(game));
+        allGuards.add(new NotInIsolatedNeutralZoneTrainingGuard(game));
         return new AnyTrainingGuard(allGuards);
     }
 
@@ -76,6 +86,7 @@ public class GameStrategyImpl implements GameStrategy {
 
         commands.clear();
         addMoveCommands();
+        //addTowerCommands();
         addTrainCommands();
         return commands;
     }
@@ -95,10 +106,37 @@ public class GameStrategyImpl implements GameStrategy {
         trainCommandSimulator.simulate(candidates);
     }
 
+    private void addTowerCommands() {
+        List<BuildCommand> candidates = towerCommandGenerator.generate();
+        towerCommandSimulator.simulate(candidates);
+    }
+
     private void addCommand(GameCommand command) {
         if (command.isValid()) {
             command.execute();
             commands.add(command);
+        }
+    }
+
+    private class BuildCommandSimulator extends AbstractCommandSimulator<BuildCommand> {
+
+        private BuildCommandSimulator(Comparator<BuildCommand> comparator) {
+            super(comparator);
+        }
+
+        @Override
+        protected void runCommand(BuildCommand command) {
+            addCommand(command);
+        }
+
+        @Override
+        protected boolean isUseful(BuildCommand command) {
+            return true;
+        }
+
+        @Override
+        protected boolean willNeverBeUsefulThisRound(BuildCommand command) {
+            return false;
         }
     }
 

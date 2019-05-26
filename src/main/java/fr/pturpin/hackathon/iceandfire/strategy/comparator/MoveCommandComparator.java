@@ -1,6 +1,7 @@
 package fr.pturpin.hackathon.iceandfire.strategy.comparator;
 
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
+import fr.pturpin.hackathon.iceandfire.command.StayCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 
@@ -16,6 +17,7 @@ public class MoveCommandComparator implements Comparator<MoveCommand> {
 
         comparator = new BeatableOpponentMoveComparator(gameRepository)
                 .thenComparing(new DefensiveMoveComparator(gameRepository))
+                // .thenComparing(new KeepTieDefenseMoveComparator(gameRepository))
                 .thenComparingInt(this::getLevelOfBeatableOpponent)
                 .thenComparing(MoveCommand::getCell, cellNearFrontLineComparator);
     }
@@ -29,6 +31,9 @@ public class MoveCommandComparator implements Comparator<MoveCommand> {
 
     @Override
     public int compare(MoveCommand o1, MoveCommand o2) {
+        if (o1 instanceof StayCommand && o2 instanceof StayCommand) {
+            return 0;
+        }
         return comparator.compare(o1, o2);
     }
 }

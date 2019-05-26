@@ -52,7 +52,7 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
             }
 
             // Is not worth it
-            return zone.size < MIN_SIZE_OF_USEFUL_ZONE;
+            return zone.getSize() < MIN_SIZE_OF_USEFUL_ZONE;
         }
 
         return false;
@@ -86,6 +86,7 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
     private VisitedZone getZone(Position position) {
         visitor.clear();
+        visitor.setOrigin(position);
         traversal.traverse(position, visitor);
         return visitor.getZone();
     }
@@ -93,10 +94,14 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
     private class OnlyNeutralZoneVisitor implements TraversalVisitor<Position> {
 
         private VisitedZone zone = new VisitedZone();
+        private Position origin;
 
         @Override
         public TraversalContinuation visit(Position element) {
-            if (isWall(element)) {
+            if (element.equals(origin)) {
+                visitOrigin();
+                return TraversalContinuation.CONTINUE;
+            } else if (isWall(element)) {
                 return TraversalContinuation.SKIP;
             } else if (isNotNeural(element)) {
                 visitNotNeutral();
@@ -112,6 +117,15 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
         VisitedZone getZone() {
             return zone;
+        }
+
+        private void visitOrigin() {
+            if (!isNotNeural(origin)) {
+                visitNeutral();
+            }
+            if (gameRepository.getCellType(origin) == CellType.ACTIVE_MINE) {
+                zone.originIsMine = true;
+            }
         }
 
         private void visitNeutral() {
@@ -134,15 +148,23 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
             return wallLike.contains(cellType);
         }
 
+        public void setOrigin(Position origin) {
+            this.origin = origin;
+        }
     }
 
     private class VisitedZone {
 
         private boolean isOnlyNeutral = true;
         private int size = 0;
+        private boolean originIsMine = false;
 
         public boolean isOnlyNeutral() {
             return isOnlyNeutral && size > 0;
+        }
+
+        public int getSize() {
+            return size - (originIsMine ? 1 : 0);
         }
 
     }

@@ -120,6 +120,7 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
         int level3Count;
         int towerCount;
         int mineCount;
+        int qgCount;
         int size;
 
         void clear() {
@@ -159,17 +160,20 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
                 towerCount++;
             } else if (building.getType() == BuildingType.MINE) {
                 mineCount++;
+            } else if (building.getType() == BuildingType.QG) {
+                qgCount++;
             }
         }
 
         public int score(int level) {
-            int score = -2 * level;
+            int score = -5 * level;
             score += level1Count * 2;
             score += level2Count * 5;
             score += level3Count * 8;
             score += towerCount;
             score += mineCount;
             score += size;
+            score += qgCount * 1000;
             return score;
         }
     }

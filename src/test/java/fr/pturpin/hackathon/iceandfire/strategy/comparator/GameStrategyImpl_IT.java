@@ -181,9 +181,174 @@ public class GameStrategyImpl_IT {
                 .doesNotContain("MOVE 8 4 7");
     }
 
+    @Test
+    public void test_GivenTieSituation_DoesNotInvokeNewUnitBehind() throws Exception {
+        givenNewTurnInput("21 19 40 35\n" +
+                "OOOO.#######\n" +
+                "OOOOOO######\n" +
+                "OOOOOO###XX#\n" +
+                "#OOOOO###XXX\n" +
+                "#OOOOO##XXXX\n" +
+                "#OOOOOOOXXXX\n" +
+                ".OOOOOOXXXX#\n" +
+                ".OOO##XXXXX#\n" +
+                "OOO###XXXXX#\n" +
+                "#OO###XXX.XX\n" +
+                "######XXXXXX\n" +
+                "#######XXXXX\n" +
+                "3 0 0 0 0 1 0 11 11 1 2 9 5 17 0 1 1 0 8 0 2 1 2 7 0 6 1 4 6 0 8 1 5 6 0 15 1 5 2 0 20 1 4 1 0 23 1 6 6 0 28 3 6 5 0 29 1 7 5 1 3 1 7 6 1 4 1 8 5 1 5 1 10 5 1 7 1 9 6 1 9 1 8 9 1 11 1 9 4 1 21 1 10 9 1 27 1 6 7");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .doesNotContain("TRAIN 1 4 6")
+                .doesNotContain("TRAIN 1 3 6");
+    }
+
     private void givenNewTurnInput(String input) {
         GameReader reader = new GameReader(new GameInputScanner(new Scanner(new StringReader(input))));
         reader.readNewTurn(game.onNewTurn());
+    }
+
+    @Test
+    public void test_GivenTieSituation_DoesNotInvokeNewUnitBehind2() throws Exception {
+        givenNewTurnInput("22 20 41 20\n" +
+                "OOO#########\n" +
+                ".OOO#####...\n" +
+                "..OO####....\n" +
+                "#.OOO###....\n" +
+                "##OOOO#.....\n" +
+                "###OOOOOO###\n" +
+                "###OOOOOX###\n" +
+                "...OO#XXXX##\n" +
+                "....###XXXX#\n" +
+                "....####XXXX\n" +
+                "...#####XX.X\n" +
+                "#########XXX\n" +
+                "4 0 0 0 0 1 0 11 11 1 1 10 9 1 2 7 7 11 0 1 1 3 4 0 2 1 3 7 0 6 1 4 7 0 7 1 4 6 0 8 1 6 6 0 9 1 7 6 0 10 1 7 5 0 11 1 8 5 1 3 1 7 8 1 4 1 6 7 1 5 1 8 6 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).doesNotContain("TRAIN 1 5 4");
+    }
+
+    @Test
+    public void test_GivenTieSituation_doesNotInvokeNewUnitBehind3() throws Exception {
+        givenNewTurnInput("32 26 101 20\n" +
+                "OOO#########\n" +
+                "OOOO#####...\n" +
+                "OOOO####....\n" +
+                "#OOOO###....\n" +
+                "##OOOO#OOO..\n" +
+                "###OOOOOO###\n" +
+                "###OOOOOX###\n" +
+                "..OOO#XXXX##\n" +
+                "..OO###XXXX#\n" +
+                "..OO####XXXX\n" +
+                "...#####XX.X\n" +
+                "#########XXX\n" +
+                "4 0 0 0 0 1 0 11 11 1 1 10 9 1 2 7 7 17 0 1 1 4 6 0 2 1 2 9 0 6 1 5 5 0 7 1 6 5 0 8 1 6 6 0 9 1 7 6 0 10 1 9 4 0 11 1 8 5 0 12 1 0 2 0 13 1 2 8 0 14 1 3 7 0 15 1 0 1 0 16 1 8 4 0 17 1 2 7 1 3 1 7 8 1 4 1 6 7 1 5 1 8 6 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .doesNotContain("TRAIN 1 9 4")
+                .doesNotContain("TRAIN 1 2 9");
+    }
+
+    @Test
+    public void test_GivenTieSituation_DoesNotMoveBehind() throws Exception {
+        givenNewTurnInput("40 20 139 17\n" +
+                "OOO#########\n" +
+                "OOOO#####...\n" +
+                "OOOO####..OO\n" +
+                "#OOOO###OOOO\n" +
+                "##OOOO#OOOOO\n" +
+                "###OOOOOO###\n" +
+                "###OOOOOO###\n" +
+                ".OOOO#OOOX##\n" +
+                ".OOO###OOXX#\n" +
+                "..OO####XXXX\n" +
+                ".OO#####XX.X\n" +
+                "#########XXX\n" +
+                "5 0 0 0 0 1 0 11 11 1 1 10 9 1 2 8 9 1 2 9 7 16 0 1 1 6 6 0 2 1 1 8 0 6 1 4 6 0 7 1 8 5 0 8 1 7 6 0 9 1 7 5 0 10 1 11 2 0 11 1 10 2 0 12 1 2 2 0 13 2 8 4 0 14 1 7 8 0 15 3 8 6 0 16 1 7 7 0 17 1 8 7 0 18 1 1 10 0 19 1 8 8");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).doesNotContain("MOVE 17 7 7");
+    }
+
+    @Test
+    public void test_GivenOffensiveSituation_DoesNotInvokeOverkillUnit() throws Exception {
+        givenNewTurnInput("33 25 0 25\n" +
+                "XXXXX#######\n" +
+                "XXXXXX##..##\n" +
+                "XXXXXX.....#\n" +
+                "#XX#oX......\n" +
+                "XXXXXO......\n" +
+                "XXXXOOOOO...\n" +
+                "XXXXOOOOOO..\n" +
+                "XXX.OOOOOO..\n" +
+                ".X...OOO#O.#\n" +
+                "#......OOOO.\n" +
+                "##..##..OOOO\n" +
+                "#######....O\n" +
+                "2 0 0 11 11 1 0 0 0 15 0 3 1 5 8 0 4 1 7 5 0 6 1 4 7 0 7 1 4 6 0 9 1 4 5 0 12 1 5 4 1 1 1 3 6 1 2 1 3 5 1 5 1 5 2 1 8 1 0 7 1 10 1 4 4 1 11 1 5 1 1 13 1 2 7 1 16 2 5 3 1 17 1 1 8");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).doesNotContain("TRAIN 3 5 3");
+    }
+
+    @Test
+    public void test_GivenBadSituation_DoesNotInvokeUnitInFrontOfOpponent() throws Exception {
+        givenNewTurnInput("21 21 8 17\n" +
+                "XXX#########\n" +
+                "XXXX######..\n" +
+                "XXXX#####...\n" +
+                "XXXX###O....\n" +
+                "XXXXXXOOO...\n" +
+                "XXXXo#OOO...\n" +
+                "XXXXXO#OOO..\n" +
+                ".....OOOOO..\n" +
+                ".....###OO..\n" +
+                "...#####OOO.\n" +
+                "..######OOOO\n" +
+                "#########..O\n" +
+                "2 0 0 11 11 1 0 0 0 12 0 3 1 9 6 0 4 1 8 4 0 6 1 5 6 0 7 1 7 3 0 9 1 6 4 1 1 1 4 4 1 2 1 1 6 1 5 1 2 5 1 8 1 3 5 1 11 1 3 6 1 14 2 4 6 1 15 2 5 4 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).doesNotContain("TRAIN 1 4 7");
+    }
+
+    @Test
+    public void test_GivenKillingOccasion_KillThemAll3() throws Exception {
+        givenNewTurnInput("24 22 10 28\n" +
+                "XXX#########\n" +
+                "XXXX######..\n" +
+                "XXXX#####oo.\n" +
+                "XXXX###oooo.\n" +
+                "XXXXXOOxxxx.\n" +
+                "XXXXX#OOOOO.\n" +
+                "XXXXXX#OOOO.\n" +
+                ".XXXXXXOOOOO\n" +
+                "..XXX###OOOO\n" +
+                ".XX#####OOO.\n" +
+                "..######OOOO\n" +
+                "#########..O\n" +
+                "2 0 0 11 11 1 0 0 0 14 0 16 1 10 5 0 22 1 6 5 0 26 1 7 7 0 27 1 6 4 0 28 1 11 7 0 32 1 5 4 1 1 1 5 6 1 2 1 1 9 1 5 1 3 8 1 8 1 4 7 1 11 1 4 8 1 21 2 5 7 1 25 1 6 7 1 34 2 4 4");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).doesNotContain("TRAIN 1 9 10");
     }
 
     private List<String> getStrCommands(Collection<GameCommand> commands) {

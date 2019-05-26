@@ -1,5 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.strategy.comparator;
 
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
@@ -9,8 +10,7 @@ import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
 import fr.pturpin.hackathon.iceandfire.unit.*;
 
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 
 public class DefensiveMoveComparator implements Comparator<MoveCommand> {
 
@@ -46,10 +46,15 @@ public class DefensiveMoveComparator implements Comparator<MoveCommand> {
 
     private PlayerCount getBeatablePlayerCount(GameCell oldCell, GameCell newCell) {
         PlayerCount count = new PlayerCount();
-
         Position position = oldCell.getPosition();
         Position newPosition = newCell.getPosition();
-        for (Position neighbor : position.getNeighbors()) {
+        Collection<Position> neighbors = position.getNeighbors();
+
+        if (neighbors.stream().allMatch(this::isNotDangerous)) {
+            return count;
+        }
+
+        for (Position neighbor : neighbors) {
             GameCell neighborCell = gameRepository.getCell(neighbor);
             if (neighborCell.isInMyTerritory()) {
                 count.add(getKillCountFrom(neighborCell.getPosition(), position, newPosition));
@@ -57,6 +62,11 @@ public class DefensiveMoveComparator implements Comparator<MoveCommand> {
         }
 
         return count;
+    }
+
+    private boolean isNotDangerous(Position position) {
+        CellType cellType = gameRepository.getCellType(position);
+        return cellType != CellType.ACTIVE_THEIR;
     }
 
     private PlayerCount getKillCountFrom(Position newVisit, Position origin, Position newPosition) {
@@ -183,7 +193,7 @@ public class DefensiveMoveComparator implements Comparator<MoveCommand> {
         }
 
         public static int noMoveScore() {
-            return -9;
+            return 0;
         }
     }
 

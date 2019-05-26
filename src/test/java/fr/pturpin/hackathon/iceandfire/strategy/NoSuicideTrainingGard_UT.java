@@ -44,7 +44,7 @@ public class NoSuicideTrainingGard_UT {
         OpponentUnit opponentUnit = new OpponentUnit(2);
 
         givenTrainedUnit(1);
-        when(cell.isInMyTerritory()).thenReturn(true);
+        when(cell.isInOpponentTerritory()).thenReturn(false);
         when(cell.getPosition()).thenReturn(new Position(4, 1));
         when(gameRepository.getOpponentUnitAt(new Position(4, 2))).thenReturn(Optional.of(opponentUnit));
 
