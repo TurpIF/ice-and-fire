@@ -1,5 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.strategy.guard;
 
+import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
@@ -19,7 +20,12 @@ public class NotNextToTowerTrainingGuard implements TrainingGuard {
 
     @Override
     public boolean isUseless(TrainCommand command) {
-        Collection<Position> neighbors = command.getCell().getPosition().getNeighbors();
+        GameCell cell = command.getCell();
+        if (!cell.isInMyTerritory()) {
+            return false;
+        }
+
+        Collection<Position> neighbors = cell.getPosition().getNeighbors();
 
         for (Position neighbor : neighbors) {
             Optional<PlayerBuilding> optBuilding = gameRepository.getPlayerBuildingAt(neighbor);

@@ -431,6 +431,30 @@ public class GameStrategyImpl_IT {
                 .contains("TRAIN 1 10 7");
     }
 
+    @Test
+    public void test_GivenKillingOccasion_KillthemAll6() throws Exception {
+        givenNewTurnInput("24 21 2 25\n" +
+                "OOO###...X##\n" +
+                ".OOOO....XX#\n" +
+                "..OOOO..XXX.\n" +
+                "...OOOOx.XX.\n" +
+                "...OOOOOXXX.\n" +
+                "...XXXXOOXX.\n" +
+                "...oooXXXXX.\n" +
+                "...ooooXXXX.\n" +
+                "...ooxoXXXX.\n" +
+                "...o..x.XXX.\n" +
+                "#........XXX\n" +
+                "##....###XXX\n" +
+                "4 0 0 0 0 0 2 5 4 0 2 7 5 1 0 11 11 9 0 1 1 7 4 1 3 1 8 2 1 4 1 8 4 1 11 1 6 6 1 14 1 9 0 1 17 2 6 5 1 18 1 5 5 1 23 2 4 5 1 24 1 3 5 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .contains("TRAIN 1 7 6");
+    }
+
     private List<String> getStrCommands(Collection<GameCommand> commands) {
         return commands.stream()
                 .map(GameCommand::getFormattedCommand)
