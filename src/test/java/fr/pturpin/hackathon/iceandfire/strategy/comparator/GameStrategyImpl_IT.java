@@ -8,6 +8,7 @@ import fr.pturpin.hackathon.iceandfire.reader.GameReader;
 import fr.pturpin.hackathon.iceandfire.strategy.GameStrategyImpl;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.Owner;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -20,9 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GameStrategyImpl_IT {
 
+    private Game game;
+    private GameStrategyImpl gameStrategy;
+
+    @Before
+    public void setUp() throws Exception {
+        game = new Game();
+        gameStrategy = new GameStrategyImpl(game);
+    }
+
     @Test
     public void test_GivenKillingOccasion_KillThemAll() throws Exception {
-        String input = "29\n15\n15\n29\n" +
+        givenNewTurnInput("29\n15\n15\n29\n" +
                 "OOO#########\n" +
                 "OOO###XXX..#\n" +
                 "OOO##XXXX...\n" +
@@ -35,12 +45,7 @@ public class GameStrategyImpl_IT {
                 "..OOOOO##XXX\n" +
                 "#.OOOO###XXX\n" +
                 "#########XXX\n" +
-                "0\n0";
-
-        GameReader reader = new GameReader(new GameInputScanner(new Scanner(new StringReader(input))));
-        Game game = new Game();
-
-        reader.readNewTurn(game.onNewTurn());
+                "0\n0");
 
         game.onNewTurn().setBuildingCount(5);
         game.onNewTurn().addBuilding(Owner.ME, BuildingType.QG, new Position(0, 0));
@@ -67,14 +72,58 @@ public class GameStrategyImpl_IT {
         game.onNewTurn().addUnit(Owner.OTHER, 4, 1, new Position(8, 2));
         game.onNewTurn().addUnit(Owner.OTHER, 3, 1, new Position(10, 6));
 
-        GameStrategyImpl gameStrategy = new GameStrategyImpl(game);
         Collection<GameCommand> commands = gameStrategy.buildCommands();
-
-        List<String> strCommands = commands.stream()
-                .map(GameCommand::getFormattedCommand)
-                .collect(Collectors.toList());
+        List<String> strCommands = getStrCommands(commands);
 
         assertThat(strCommands).contains("MOVE 27 7 6");
+    }
+
+    @Test
+    public void test_GivenDefensiveOccasion_TrainDefensiveUnit() throws Exception {
+        givenNewTurnInput("15\n14\n5\n16\n" +
+                "OOO#####.###\n" +
+                "OOO##....###\n" +
+                "OOOO....####\n" +
+                "###OO..#####\n" +
+                "##.OOOX##..#\n" +
+                "#..OOOX....#\n" +
+                "#....OXX...#\n" +
+                "#..##XXXX.##\n" +
+                "#####XXXX###\n" +
+                "####....XXXX\n" +
+                "###....##XXX\n" +
+                "###.#####XXX\n" +
+                "2\n" +
+                "0 0 0 0\n" +
+                "1 0 11 11\n" +
+                "11\n" +
+                "0 1 1 0 1\n" +
+                "0 2 1 3 5\n" +
+                "0 6 1 4 5\n" +
+                "0 8 1 5 5\n" +
+                "0 10 1 5 6\n" +
+                "1 3 1 11 9\n" +
+                "1 4 1 5 8\n" +
+                "1 5 1 5 7\n" +
+                "1 7 1 6 6\n" +
+                "1 9 1 6 5\n" +
+                "1 11 1 6 4\n");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).contains("TRAIN 1 5 4");
+    }
+
+    private void givenNewTurnInput(String input) {
+        GameReader reader = new GameReader(new GameInputScanner(new Scanner(new StringReader(input))));
+        reader.readNewTurn(game.onNewTurn());
+    }
+
+    private List<String> getStrCommands(Collection<GameCommand> commands) {
+        return commands.stream()
+                .map(GameCommand::getFormattedCommand)
+                .collect(Collectors.toList());
     }
 
 }

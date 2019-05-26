@@ -41,7 +41,7 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
         VisitedZone zone = getZone(position);
 
-        if (zone.isOnlyNeutral) {
+        if (zone.isOnlyNeutral()) {
             boolean isOverpowered = trainedUnit.getLevel() != 1;
             if (isOverpowered) {
                 return true;
@@ -140,6 +140,10 @@ public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
         private boolean isOnlyNeutral = true;
         private int size = 0;
+
+        public boolean isOnlyNeutral() {
+            return isOnlyNeutral && size > 0;
+        }
 
     }
 
