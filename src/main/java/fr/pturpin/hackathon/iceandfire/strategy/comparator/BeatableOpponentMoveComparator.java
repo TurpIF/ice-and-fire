@@ -17,13 +17,7 @@ public class BeatableOpponentMoveComparator extends BeatableOpponentComparator<M
 
     @Override
     protected int evaluateScore(MoveCommand command, OpponentCount count) {
-        int score = -2 * command.getPlayerUnit().getLevel();
-        score += count.level1Count * 2;
-        score += count.level2Count * 4;
-        score += count.level3Count * 6;
-        score += count.towerCount;
-        score += count.mineCount;
-        score += count.size;
-        return score;
+        int level = command.getPlayerUnit().getLevel();
+        return count.score(level);
     }
 }

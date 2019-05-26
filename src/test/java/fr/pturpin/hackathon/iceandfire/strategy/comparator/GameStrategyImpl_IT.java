@@ -115,6 +115,47 @@ public class GameStrategyImpl_IT {
         assertThat(strCommands).contains("TRAIN 1 5 4");
     }
 
+    @Test
+    public void test_GivenKillingOccasion_KillThemAll2() throws Exception {
+        givenNewTurnInput("41 34 0 4\n" +
+                "OOO#####.###\n" +
+                "OOO##....###\n" +
+                "OOOOOOOO####\n" +
+                "###OOOO#####\n" +
+                "##OOOOO##..#\n" +
+                "#OOOOOOOx..#\n" +
+                "#OOOOOOxx..#\n" +
+                "#OO##OOxx.##\n" +
+                "#####OOxx###\n" +
+                "####OOOOOXoX\n" +
+                "###OOOO##XXX\n" +
+                "###.#####XXX\n" +
+                "2\n" +
+                "0 0 0 0\n" +
+                "1 0 11 11\n" +
+                "15\n" +
+                "0 1 1 7 2\n" +
+                "0 2 1 2 4\n" +
+                "0 6 1 5 8\n" +
+                "0 8 1 6 6\n" +
+                "0 10 1 5 9\n" +
+                "0 12 1 6 5\n" +
+                "0 19 1 7 5\n" +
+                "0 23 1 6 7\n" +
+                "0 24 1 6 8\n" +
+                "0 26 1 5 10\n" +
+                "0 27 1 3 10\n" +
+                "0 30 2 6 10\n" +
+                "0 31 1 7 9\n" +
+                "0 32 1 8 9\n" +
+                "1 35 2 9 9");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).contains("TRAIN 3 9 9");
+    }
+
     private void givenNewTurnInput(String input) {
         GameReader reader = new GameReader(new GameInputScanner(new Scanner(new StringReader(input))));
         reader.readNewTurn(game.onNewTurn());

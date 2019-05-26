@@ -162,5 +162,15 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
             }
         }
 
+        public int score(int level) {
+            int score = -2 * level;
+            score += level1Count * 2;
+            score += level2Count * 5;
+            score += level3Count * 8;
+            score += towerCount;
+            score += mineCount;
+            score += size;
+            return score;
+        }
     }
 }
