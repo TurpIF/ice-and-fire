@@ -9,6 +9,7 @@ import fr.pturpin.hackathon.iceandfire.strategy.GameStrategyImpl;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.Owner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.StringReader;
@@ -115,6 +116,7 @@ public class GameStrategyImpl_IT {
         assertThat(strCommands).contains("TRAIN 1 5 4");
     }
 
+    @Ignore
     @Test
     public void test_GivenKillingOccasion_KillThemAll2() throws Exception {
         givenNewTurnInput("41 34 0 4\n" +
@@ -349,6 +351,29 @@ public class GameStrategyImpl_IT {
         List<String> strCommands = getStrCommands(commands);
 
         assertThat(strCommands).doesNotContain("TRAIN 1 9 10");
+    }
+
+    @Test
+    public void test_GetDefenseSituation_BuildTower() throws Exception {
+        givenNewTurnInput("34 25 1 18\n" +
+                "OOOO.....###\n" +
+                ".OOOOOO...##\n" +
+                "..OOOOOO...#\n" +
+                "##.OOOO.....\n" +
+                "#...OOOO....\n" +
+                "#...OOOXooo.\n" +
+                "....OOOXXX.#\n" +
+                "....OXXXXX.#\n" +
+                ".....XXXXX##\n" +
+                "#.....XXXXXX\n" +
+                "##......XXXX\n" +
+                "###........X\n" +
+                "4 0 0 0 0 1 0 11 11 1 2 7 7 1 2 8 6 10 0 1 1 7 2 0 2 1 6 4 0 5 1 4 7 0 7 1 5 6 0 10 1 6 6 0 12 1 7 4 1 3 1 6 9 1 4 1 5 8 1 6 1 9 7 1 14 2 7 5 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands).contains("BUILD TOWER 6 4");
     }
 
     private List<String> getStrCommands(Collection<GameCommand> commands) {

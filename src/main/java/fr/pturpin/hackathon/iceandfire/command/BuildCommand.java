@@ -18,6 +18,10 @@ public class BuildCommand implements GameCommand {
         this.gameRepository = gameRepository;
     }
 
+    public GameCell getCell() {
+        return gameCell;
+    }
+
     @Override
     public void execute() {
         gameRepository.invokeNewBuilding(trainedPlayerBuilding, gameCell);

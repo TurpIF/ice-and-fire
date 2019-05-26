@@ -4,11 +4,11 @@ import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
 
-public class NextToFrontLineTrainingGard implements TrainingGuard {
+public class NextToFrontLineTrainingGuard implements TrainingGuard {
 
     private final DistanceFromFrontLine distanceFromFrontLine;
 
-    public NextToFrontLineTrainingGard(DistanceFromFrontLine distanceFromFrontLine) {
+    public NextToFrontLineTrainingGuard(DistanceFromFrontLine distanceFromFrontLine) {
         this.distanceFromFrontLine = distanceFromFrontLine;
     }
 
@@ -20,9 +20,6 @@ public class NextToFrontLineTrainingGard implements TrainingGuard {
         int distance = distanceFromFrontLine.getDistanceOf(position);
 
         return distance > 1;
-
-        // GameCell cell = command.getCell();
-        // return cell.isInMyTerritory();
     }
 
 }

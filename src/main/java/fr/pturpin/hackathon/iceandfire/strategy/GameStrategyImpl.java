@@ -11,6 +11,7 @@ import fr.pturpin.hackathon.iceandfire.strategy.comparator.TowerCommandComparato
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.TrainCommandComparator;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromFrontLine;
 import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentCastle;
+import fr.pturpin.hackathon.iceandfire.strategy.distance.DistanceFromOpponentLine;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.CommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.MoveCommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.generator.TowerBuildCommandGenerator;
@@ -28,6 +29,7 @@ public class GameStrategyImpl implements GameStrategy {
 
     private final GameRepository game;
     private final DistanceFromFrontLine distanceFromFrontLine;
+    private final DistanceFromOpponentLine distanceFromOpponentLine;
     private final DistanceFromOpponentCastle distanceFromOpponentCastle;
 
     private final CommandGenerator<MoveCommand> moveCommandGenerator;
@@ -45,9 +47,11 @@ public class GameStrategyImpl implements GameStrategy {
 
         distanceFromOpponentCastle = new DistanceFromOpponentCastle(game);
         distanceFromFrontLine = new DistanceFromFrontLine(game);
+        distanceFromOpponentLine = new DistanceFromOpponentLine(game);
 
         MoveGuard moveGuard = createMoveGard();
         TrainingGuard trainingGuard = createTrainingGard();
+        BuildGuard towerGuard = createTowerGard();
 
         CellNearFrontLineComparator cellNearFrontLineComparator = new CellNearFrontLineComparator(
                 distanceFromOpponentCastle, distanceFromFrontLine, game);
@@ -58,7 +62,7 @@ public class GameStrategyImpl implements GameStrategy {
 
         moveCommandSimulator = new MoveCommandSimulator(moveComparator, moveGuard);
         trainCommandSimulator = new TrainCommandSimulator(trainComparator, trainingGuard);
-        towerCommandSimulator = new BuildCommandSimulator(towerComparator);
+        towerCommandSimulator = new BuildCommandSimulator(towerComparator, towerGuard);
 
         moveCommandGenerator = new MoveCommandGenerator(game);
         trainCommandGenerator = new TrainCommandGenerator(game);
@@ -73,11 +77,19 @@ public class GameStrategyImpl implements GameStrategy {
 
     private TrainingGuard createTrainingGard() {
         List<TrainingGuard> allGuards = new ArrayList<>();
-        allGuards.add(new NextToFrontLineTrainingGard(distanceFromFrontLine));
+        allGuards.add(new NextToFrontLineTrainingGuard(distanceFromFrontLine));
         allGuards.add(new NotBehindFrontLineTrainingGuard(game));
         allGuards.add(new NoSuicideTrainingGard(game));
         allGuards.add(new NotInIsolatedNeutralZoneTrainingGuard(game));
         return new AnyTrainingGuard(allGuards);
+    }
+
+    private BuildGuard createTowerGard() {
+        List<BuildGuard> allGuards = new ArrayList<>();
+        allGuards.add(new NextToFrontLineBuildGuard(distanceFromOpponentLine));
+        allGuards.add(new NotNextToTowerGuard(game));
+        allGuards.add(new WithOpponentNearbyGuard(game));
+        return new AnyBuildGuard(allGuards);
     }
 
     @Override
@@ -86,13 +98,14 @@ public class GameStrategyImpl implements GameStrategy {
 
         commands.clear();
         addMoveCommands();
-        //addTowerCommands();
+        addTowerCommands();
         addTrainCommands();
         return commands;
     }
 
     private void computeDistances() {
         distanceFromFrontLine.compute();
+        distanceFromOpponentLine.compute();
         distanceFromOpponentCastle.compute();
     }
 
@@ -120,8 +133,11 @@ public class GameStrategyImpl implements GameStrategy {
 
     private class BuildCommandSimulator extends AbstractCommandSimulator<BuildCommand> {
 
-        private BuildCommandSimulator(Comparator<BuildCommand> comparator) {
+        private final BuildGuard buildGuard;
+
+        private BuildCommandSimulator(Comparator<BuildCommand> comparator, BuildGuard buildGuard) {
             super(comparator);
+            this.buildGuard = buildGuard;
         }
 
         @Override
@@ -131,7 +147,7 @@ public class GameStrategyImpl implements GameStrategy {
 
         @Override
         protected boolean isUseful(BuildCommand command) {
-            return true;
+            return !buildGuard.isUseless(command);
         }
 
         @Override

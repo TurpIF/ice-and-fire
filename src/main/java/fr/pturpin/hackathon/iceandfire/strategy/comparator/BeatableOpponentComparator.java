@@ -9,7 +9,6 @@ import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentBuilding;
-import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 
 import java.util.*;
 
@@ -113,68 +112,4 @@ public abstract class BeatableOpponentComparator<T extends GameCommand> implemen
         }
     }
 
-    static final class OpponentCount {
-
-        int level1Count;
-        int level2Count;
-        int level3Count;
-        int towerCount;
-        int mineCount;
-        int qgCount;
-        int size;
-
-        void clear() {
-            level1Count = 0;
-            level2Count = 0;
-            level3Count = 0;
-            towerCount = 0;
-            mineCount = 0;
-            size = 0;
-        }
-
-        void add(OpponentCount other) {
-            level1Count += other.level1Count;
-            level2Count += other.level2Count;
-            level3Count += other.level3Count;
-            towerCount += other.towerCount;
-            mineCount += other.mineCount;
-            size += other.size;
-        }
-
-        void add(OpponentUnit unit) {
-            switch (unit.getLevel()) {
-                case 1:
-                    level1Count++;
-                    break;
-                case 2:
-                    level2Count++;
-                    break;
-                case 3:
-                    level3Count++;
-                    break;
-            }
-        }
-
-        void add(OpponentBuilding building) {
-            if (building.getType() == BuildingType.TOWER) {
-                towerCount++;
-            } else if (building.getType() == BuildingType.MINE) {
-                mineCount++;
-            } else if (building.getType() == BuildingType.QG) {
-                qgCount++;
-            }
-        }
-
-        public int score(int level) {
-            int score = -5 * level;
-            score += level1Count * 2;
-            score += level2Count * 5;
-            score += level3Count * 8;
-            score += towerCount;
-            score += mineCount;
-            score += size;
-            score += qgCount * 1000;
-            return score;
-        }
-    }
 }
