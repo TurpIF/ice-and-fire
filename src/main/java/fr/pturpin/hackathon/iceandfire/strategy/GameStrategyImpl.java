@@ -81,6 +81,7 @@ public class GameStrategyImpl implements GameStrategy {
         allGuards.add(new NotBehindFrontLineTrainingGuard(game));
         allGuards.add(new NoSuicideTrainingGard(game));
         allGuards.add(new NotInIsolatedNeutralZoneTrainingGuard(game));
+        allGuards.add(new NotNextToTowerTrainingGuard(game));
         return new AnyTrainingGuard(allGuards);
     }
 

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class NotInIsolatedNeutralZoneTrainingGuard implements TrainingGuard {
 
-    private static final int MIN_DISTANCE_BETWEEN_UNITS = 3;
+    private static final int MIN_DISTANCE_BETWEEN_UNITS = 2;
     private static final int MIN_SIZE_OF_USEFUL_ZONE = 3;
 
     private final GameRepository gameRepository;

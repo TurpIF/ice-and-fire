@@ -116,7 +116,7 @@ public class GameStrategyImpl_IT {
         assertThat(strCommands).contains("TRAIN 1 5 4");
     }
 
-    @Ignore
+    @Ignore // Because of towers. This test may be inaccurate now
     @Test
     public void test_GivenKillingOccasion_KillThemAll2() throws Exception {
         givenNewTurnInput("41 34 0 4\n" +
@@ -374,6 +374,35 @@ public class GameStrategyImpl_IT {
         List<String> strCommands = getStrCommands(commands);
 
         assertThat(strCommands).contains("BUILD TOWER 6 4");
+    }
+
+    @Test
+    public void test_GivenKillingOccasion_KillThemAll4() throws Exception {
+        givenNewTurnInput("21 16 21 25\n" +
+                "OOO#########\n" +
+                ".OOO####..##\n" +
+                "..OOOO....##\n" +
+                "###OOOXXX.##\n" +
+                "##.OOXXXX.##\n" +
+                "##.OOXXX..##\n" +
+                "##.OOX.X..##\n" +
+                "##.OXXXXX.##\n" +
+                "##.XXXXXX###\n" +
+                "##..XXXXXXX.\n" +
+                "##..####XXXX\n" +
+                "#########..X\n" +
+                "3 0 0 0 0 0 2 3 6 1 0 11 11 11 0 1 1 5 3 0 2 1 3 7 0 6 1 4 6 0 12 1 4 4 1 3 1 4 9 1 4 1 3 8 1 5 1 4 7 1 7 1 8 3 1 9 1 7 3 1 11 1 5 4 1 13 2 5 5 ");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .contains("MOVE 6 5 6")
+                .contains("MOVE 2 2 7")
+                .doesNotContain("TRAIN 1 4 6")
+                .doesNotContain("TRAIN 1 3 7")
+                .contains("TRAIN 1 6 6")
+                .contains("TRAIN 1 7 6");
     }
 
     private List<String> getStrCommands(Collection<GameCommand> commands) {
