@@ -156,6 +156,31 @@ public class GameStrategyImpl_IT {
         assertThat(strCommands).contains("TRAIN 3 9 9");
     }
 
+    @Test
+    public void test_GivenDefensiveSituation_UnitShouldNotMove() throws Exception {
+        givenNewTurnInput("15 8 6 26\n" +
+                "OOOOOOO....#\n" +
+                ".OOOOOO###.#\n" +
+                "...#OOOO##o#\n" +
+                "#.##OOOOO#o#\n" +
+                "#.##OOOOOOX#\n" +
+                "#..##xOOOOX#\n" +
+                "#.ooxxO##OX#\n" +
+                "#.oXOOOO##X#\n" +
+                "#.#XXXXX##X#\n" +
+                "#.##XXXX#.X.\n" +
+                "#.###XXXXXXX\n" +
+                "#....XXXXXXX\n" +
+                "5 0 0 0 0 1 0 11 11 1 2 4 9 1 2 6 8 1 2 10 6 15 0 1 1 7 4 0 2 1 7 5 0 5 1 6 5 0 8 1 5 7 0 10 1 8 5 0 11 1 6 7 0 13 1 7 7 0 15 1 8 4 0 16 1 9 5 0 19 1 9 6 0 26 3 4 7 1 3 1 5 9 1 6 1 7 9 1 7 1 3 7 1 27 1 10 4");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .doesNotContain("MOVE 8 5 6")
+                .doesNotContain("MOVE 8 4 7");
+    }
+
     private void givenNewTurnInput(String input) {
         GameReader reader = new GameReader(new GameInputScanner(new Scanner(new StringReader(input))));
         reader.readNewTurn(game.onNewTurn());

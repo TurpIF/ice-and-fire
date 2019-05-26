@@ -15,6 +15,7 @@ public class MoveCommandComparator implements Comparator<MoveCommand> {
         this.gameRepository = gameRepository;
 
         comparator = new BeatableOpponentMoveComparator(gameRepository)
+                .thenComparing(new DefensiveMoveComparator(gameRepository))
                 .thenComparingInt(this::getLevelOfBeatableOpponent)
                 .thenComparing(MoveCommand::getCell, cellNearFrontLineComparator);
     }
