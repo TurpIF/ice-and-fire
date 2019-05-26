@@ -2,6 +2,7 @@ package fr.pturpin.hackathon.iceandfire.strategy.generator;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;
+import fr.pturpin.hackathon.iceandfire.command.StayCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
@@ -28,9 +29,13 @@ public class MoveCommandGenerator implements CommandGenerator<MoveCommand> {
     private Stream<MoveCommand> generate(PlayerUnit unit) {
         Collection<Position> neighbors = unit.getPosition().getNeighbors();
 
-        return neighbors.stream()
+        Stream<MoveCommand> moveCommands = neighbors.stream()
                 .map(gameRepository::getCell)
                 .map(cell -> new MoveCommand(unit, cell));
+
+        StayCommand stayCommand = new StayCommand(unit, gameRepository.getCell(unit.getPosition()));
+
+        return Stream.concat(Stream.of(stayCommand), moveCommands);
     }
 
 }

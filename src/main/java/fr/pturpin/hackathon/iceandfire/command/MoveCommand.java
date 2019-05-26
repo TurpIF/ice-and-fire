@@ -5,8 +5,8 @@ import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
 public class MoveCommand implements GameCommand {
 
-    private final PlayerUnit playerUnit;
-    private final GameCell gameCell;
+    protected final PlayerUnit playerUnit;
+    protected final GameCell gameCell;
 
     public MoveCommand(PlayerUnit playerUnit, GameCell gameCell) {
         this.playerUnit = playerUnit;
