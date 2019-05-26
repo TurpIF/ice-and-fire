@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class GameConfiguration {
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private final GameWriter gameWriter;
     private final GameReader gameReader;
