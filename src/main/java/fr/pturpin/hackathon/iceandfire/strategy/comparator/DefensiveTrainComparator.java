@@ -1,5 +1,6 @@
 package fr.pturpin.hackathon.iceandfire.strategy.comparator;
 
+import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
@@ -38,6 +39,10 @@ public class DefensiveTrainComparator implements Comparator<TrainCommand> {
         Collection<Position> neighbors = cell.getPosition().getNeighbors();
 
         for (Position neighbor : neighbors) {
+            if (gameRepository.getCellType(neighbor) == CellType.INACTIVE_THEIR) {
+                continue;
+            }
+
             boolean isTie = gameRepository.getOpponentUnitAt(neighbor)
                     .filter(opponentUnit -> isTie(opponentUnit, trainedUnit))
                     .isPresent();
