@@ -145,6 +145,12 @@ public class Game implements GameRepository {
         }
     }
 
+    @Override
+    public void invokeNewBuilding(TrainedPlayerBuilding trainedPlayerBuilding, GameCell cell) {
+        onNewTurn().addBuilding(Owner.ME, trainedPlayerBuilding.getBuildingType(), cell.getPosition());
+        playerGold -= trainedPlayerBuilding.getCost();
+    }
+
     private class PropagateDeactivateTerritoryVisitor implements TraversalVisitor<Position> {
 
         private boolean isIsolated = true;

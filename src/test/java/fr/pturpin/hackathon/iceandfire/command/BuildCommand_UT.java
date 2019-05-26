@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Strict.class)
@@ -132,6 +133,13 @@ public class BuildCommand_UT {
         when(trainedPlayerBuilding.getCost()).thenReturn(10);
         when(gameRepository.getPlayerGold()).thenReturn(10);
         when(cell.isOccupied()).thenReturn(false);
+    }
+
+    @Test
+    public void execute_GivenRepository_InvokesTheBuilding() throws Exception {
+        command.execute();
+
+        verify(gameRepository).invokeNewBuilding(trainedPlayerBuilding, cell);
     }
 
     private void givenPosition(int x, int y) {

@@ -12,8 +12,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class Game_UT {
 
@@ -543,6 +542,24 @@ public class Game_UT {
 
         assertThat(opponentQg.getType()).isEqualTo(BuildingType.QG);
         assertThat(opponentQg.getPosition()).isEqualTo(position);
+    }
+
+    @Test
+    public void invokeNewBuilding_GivenBuildingToInvoke_MakeNewBuildingAppear() throws Exception {
+        TrainedPlayerBuilding trainedBuilding = mock(TrainedPlayerBuilding.class);
+        Position position = new Position(5, 5);
+
+        when(trainedBuilding.getBuildingType()).thenReturn(BuildingType.TOWER);
+        when(trainedBuilding.getCost()).thenReturn(6);
+
+        GameCell cell = game.getCell(position);
+        game.onNewTurn().setPlayerGold(10);
+        game.invokeNewBuilding(trainedBuilding, cell);
+
+        assertThat(game.getPlayerBuildingAt(position))
+                .isNotEmpty()
+                .hasValueSatisfying(building -> assertThat(building.getType()).isEqualTo(BuildingType.TOWER));
+        assertThat(game.getPlayerGold()).isEqualTo(4);
     }
 
     private CellType[] getFullGrid(CellType cellType) {

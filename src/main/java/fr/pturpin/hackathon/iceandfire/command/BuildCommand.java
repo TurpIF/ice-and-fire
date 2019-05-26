@@ -20,7 +20,7 @@ public class BuildCommand implements GameCommand {
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException();
+        gameRepository.invokeNewBuilding(trainedPlayerBuilding, gameCell);
     }
 
     @Override

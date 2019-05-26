@@ -34,6 +34,8 @@ public interface GameRepository {
 
     void invokeNewUnit(TrainedUnit trainedUnit, GameCell cell);
 
+    void invokeNewBuilding(TrainedPlayerBuilding trainedPlayerBuilding, GameCell cell);
+
     Stream<GameCell> getAllCells();
 
     Stream<PlayerUnit> getAllPlayerUnits();
