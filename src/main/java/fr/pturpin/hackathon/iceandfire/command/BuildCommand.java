@@ -3,6 +3,7 @@ package fr.pturpin.hackathon.iceandfire.command;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedPlayerBuilding;
 
 public class BuildCommand implements GameCommand {
@@ -34,16 +35,15 @@ public class BuildCommand implements GameCommand {
     }
 
     private boolean isBuildable() {
-        switch (trainedPlayerBuilding.getBuildingType()) {
-            case QG:
-                return false;
-            case MINE:
-                return gameCell.isMineSpot();
-            case TOWER:
-                return !gameCell.isMineSpot();
-            default:
-                return true;
+        BuildingType buildingType = trainedPlayerBuilding.getBuildingType();
+        if (buildingType == BuildingType.QG) {
+            return false;
+        } else if (buildingType == BuildingType.MINE) {
+            return gameCell.isMineSpot();
+        } else if (buildingType == BuildingType.TOWER) {
+            return !gameCell.isMineSpot();
         }
+        return true;
     }
 
     @Override
