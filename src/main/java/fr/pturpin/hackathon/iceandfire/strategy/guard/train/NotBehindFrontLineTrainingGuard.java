@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy.guard;
+package fr.pturpin.hackathon.iceandfire.strategy.guard.train;
 
 import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;

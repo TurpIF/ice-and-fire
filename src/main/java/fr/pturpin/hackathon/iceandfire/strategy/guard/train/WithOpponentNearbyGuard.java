@@ -1,9 +1,10 @@
-package fr.pturpin.hackathon.iceandfire.strategy.guard;
+package fr.pturpin.hackathon.iceandfire.strategy.guard.train;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.BuildCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.strategy.comparator.OpponentCount;
+import fr.pturpin.hackathon.iceandfire.strategy.guard.tower.BuildGuard;
 
 import java.util.HashSet;
 import java.util.Set;

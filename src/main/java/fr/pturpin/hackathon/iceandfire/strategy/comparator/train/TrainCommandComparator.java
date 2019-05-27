@@ -1,7 +1,8 @@
-package fr.pturpin.hackathon.iceandfire.strategy.comparator;
+package fr.pturpin.hackathon.iceandfire.strategy.comparator.train;
 
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
+import fr.pturpin.hackathon.iceandfire.strategy.comparator.cell.CellNearFrontLineComparator;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 
 import java.util.Comparator;

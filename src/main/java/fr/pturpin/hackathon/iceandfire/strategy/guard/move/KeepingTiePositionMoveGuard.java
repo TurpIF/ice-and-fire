@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy.guard;
+package fr.pturpin.hackathon.iceandfire.strategy.guard.move;
 
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.MoveCommand;

@@ -4,7 +4,7 @@ import fr.pturpin.hackathon.iceandfire.cell.GameCell;
 import fr.pturpin.hackathon.iceandfire.cell.Position;
 import fr.pturpin.hackathon.iceandfire.command.TrainCommand;
 import fr.pturpin.hackathon.iceandfire.game.GameRepository;
-import fr.pturpin.hackathon.iceandfire.strategy.guard.NoSuicideTrainingGard;
+import fr.pturpin.hackathon.iceandfire.strategy.guard.train.NoSuicideTrainingGard;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentUnit;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 import org.junit.Before;

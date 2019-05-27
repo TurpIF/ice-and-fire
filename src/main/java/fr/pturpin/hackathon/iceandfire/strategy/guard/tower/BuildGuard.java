@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy.guard;
+package fr.pturpin.hackathon.iceandfire.strategy.guard.tower;
 
 import fr.pturpin.hackathon.iceandfire.command.BuildCommand;
 

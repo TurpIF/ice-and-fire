@@ -1,4 +1,4 @@
-package fr.pturpin.hackathon.iceandfire.strategy.comparator;
+package fr.pturpin.hackathon.iceandfire.strategy.comparator.cell;
 
 import fr.pturpin.hackathon.iceandfire.cell.CellType;
 import fr.pturpin.hackathon.iceandfire.cell.GameCell;
