@@ -9,7 +9,11 @@ public final class PositionComparator implements Comparator<Position> {
     private final Comparator<Position> comparator;
 
     public PositionComparator() {
-        comparator = Comparator.comparingInt(Position::getX).thenComparingInt(Position::getY);
+        comparator = Comparator
+                .<Position>comparingInt(position -> position.getX() % 2)
+                .thenComparingInt(position -> position.getY() % 2)
+                .thenComparingInt(Position::getX)
+                .thenComparingInt(Position::getY);
     }
 
     @Override

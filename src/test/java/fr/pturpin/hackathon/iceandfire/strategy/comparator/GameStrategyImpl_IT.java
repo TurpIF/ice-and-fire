@@ -455,6 +455,32 @@ public class GameStrategyImpl_IT {
                 .contains("TRAIN 1 7 6");
     }
 
+    @Test
+    public void test_GivenUnitCollapsed_SeparatesThem() throws Exception {
+        givenNewTurnInput("7 7 4 8\n" +
+                "OOOO..######\n" +
+                ".OOO........\n" +
+                "..OO........\n" +
+                "#..O........\n" +
+                "#...#.......\n" +
+                "#....##.....\n" +
+                ".....##....#\n" +
+                ".......#...#\n" +
+                ".........XX#\n" +
+                "......XXX.X.\n" +
+                "........XXXX\n" +
+                "######.....X\n" +
+                "2 0 0 0 0 1 0 11 11 6 0 1 1 3 1 0 2 1 3 2 0 5 1 3 3 1 3 1 9 8 1 4 1 7 9 1 6 1 6 9");
+
+        Collection<GameCommand> commands = gameStrategy.buildCommands();
+        List<String> strCommands = getStrCommands(commands);
+
+        assertThat(strCommands)
+                .contains("MOVE 2 4 2")
+                .contains("MOVE 5 3 4")
+                .contains("MOVE 1 4 1");
+    }
+
     private List<String> getStrCommands(Collection<GameCommand> commands) {
         return commands.stream()
                 .map(GameCommand::getFormattedCommand)
