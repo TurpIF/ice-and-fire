@@ -8,25 +8,42 @@ import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.DfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
-import fr.pturpin.hackathon.iceandfire.unit.*;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CleanCacheManager;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CleanedCache;
+import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
+import fr.pturpin.hackathon.iceandfire.unit.PlayerBuilding;
+import fr.pturpin.hackathon.iceandfire.unit.PlayerUnit;
 
 import java.util.*;
 
-public class DefensiveMoveComparator implements Comparator<MoveCommand> {
+public class DefensiveMoveComparator implements Comparator<MoveCommand>, CleanedCache {
 
     private final DfsTraversal<Position> traversal;
     private final KillCountVisitor visitor;
     private final GameRepository gameRepository;
 
+    private final Map<MoveCommand, Integer> cache = new HashMap<>();
+
     public DefensiveMoveComparator(GameRepository gameRepository) {
         traversal = new PositionDfsTraversal();
         visitor = new KillCountVisitor(gameRepository);
         this.gameRepository = gameRepository;
+
+        CleanCacheManager.getInstance().addCache(this);
     }
 
     @Override
     public int compare(MoveCommand o1, MoveCommand o2) {
-        return Comparator.comparingInt(this::evaluate).compare(o1, o2);
+        return Comparator.comparingInt(this::cacheEvaluate).compare(o1, o2);
+    }
+
+    private int cacheEvaluate(MoveCommand command) {
+        return cache.computeIfAbsent(command, this::evaluate);
+    }
+
+    @Override
+    public void clean() {
+        cache.clear();
     }
 
     private int evaluate(MoveCommand command) {

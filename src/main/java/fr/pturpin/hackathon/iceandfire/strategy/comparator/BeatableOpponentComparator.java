@@ -9,30 +9,43 @@ import fr.pturpin.hackathon.iceandfire.game.GameRepository;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.DfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.PositionDfsTraversal;
 import fr.pturpin.hackathon.iceandfire.strategy.graph.TraversalVisitor;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CleanCacheManager;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CleanedCache;
 import fr.pturpin.hackathon.iceandfire.unit.BuildingType;
 import fr.pturpin.hackathon.iceandfire.unit.OpponentBuilding;
 import fr.pturpin.hackathon.iceandfire.unit.TrainedUnit;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.*;
 
-public abstract class BeatableOpponentComparator<T extends GameCommand> implements Comparator<T> {
+public abstract class BeatableOpponentComparator<T extends GameCommand> implements Comparator<T>, CleanedCache {
 
     private final GameRepository gameRepository;
 
     private final DfsTraversal<Position> traversal;
     private final KillCountVisitor visitor;
 
+    private final Map<T, Integer> cache = new HashMap<>();
+
     protected BeatableOpponentComparator(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
         traversal = new PositionDfsTraversal();
         visitor = new KillCountVisitor();
+
+        CleanCacheManager.getInstance().addCache(this);
     }
 
     @Override
     public int compare(T o1, T o2) {
-        return Comparator.<T>comparingInt(this::evaluateScore).compare(o1, o2);
+        return Comparator.<T>comparingInt(this::cachedEvaluateScore).compare(o1, o2);
+    }
+
+    private int cachedEvaluateScore(T command) {
+        return cache.computeIfAbsent(command, this::evaluateScore);
+    }
+
+    @Override
+    public void clean() {
+        cache.clear();
     }
 
     private int evaluateScore(T command) {

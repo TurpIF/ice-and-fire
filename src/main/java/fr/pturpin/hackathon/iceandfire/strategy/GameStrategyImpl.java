@@ -18,6 +18,7 @@ import fr.pturpin.hackathon.iceandfire.strategy.generator.TowerBuildCommandGener
 import fr.pturpin.hackathon.iceandfire.strategy.generator.TrainCommandGenerator;
 import fr.pturpin.hackathon.iceandfire.strategy.guard.*;
 import fr.pturpin.hackathon.iceandfire.strategy.simulator.AbstractCommandSimulator;
+import fr.pturpin.hackathon.iceandfire.strategy.simulator.CleanCacheManager;
 import fr.pturpin.hackathon.iceandfire.strategy.simulator.CommandSimulator;
 
 import java.util.ArrayList;
@@ -95,6 +96,7 @@ public class GameStrategyImpl implements GameStrategy {
 
     @Override
     public Collection<GameCommand> buildCommands() {
+        CleanCacheManager.getInstance().clean();
         computeDistances();
 
         commands.clear();
@@ -129,6 +131,7 @@ public class GameStrategyImpl implements GameStrategy {
         if (command.isValid()) {
             command.execute();
             commands.add(command);
+            CleanCacheManager.getInstance().clean();
         }
     }
 
